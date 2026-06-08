@@ -1,4 +1,10 @@
+'use client';
+
+import { useTranslation } from 'react-i18next';
+
 export default function SizeGuidePage() {
+  const { t } = useTranslation();
+
   const sizes = [
     { size: 'XS', chest: '34-36"', waist: '28-30"', hip: '34-36"' },
     { size: 'S', chest: '36-38"', waist: '30-32"', hip: '36-38"' },
@@ -10,19 +16,19 @@ export default function SizeGuidePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">Size Guide</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('sizeGuide.title')}</h1>
       
       <div className="mb-8">
-        <p className="text-gray-600 mb-6">Find your perfect fit with our size guide. All measurements are in inches.</p>
+        <p className="text-gray-600 mb-6">{t('sizeGuide.description')}</p>
         
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                <th className="p-3 text-left border">Size</th>
-                <th className="p-3 text-left border">Chest</th>
-                <th className="p-3 text-left border">Waist</th>
-                <th className="p-3 text-left border">Hip</th>
+                <th className="p-3 text-left border">{t('sizeGuide.size')}</th>
+                <th className="p-3 text-left border">{t('sizeGuide.chest')}</th>
+                <th className="p-3 text-left border">{t('sizeGuide.waist')}</th>
+                <th className="p-3 text-left border">{t('sizeGuide.hip')}</th>
               </tr>
             </thead>
             <tbody>
@@ -40,11 +46,11 @@ export default function SizeGuidePage() {
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="font-semibold mb-3">How to Measure</h3>
+        <h3 className="font-semibold mb-3">{t('sizeGuide.howToMeasure')}</h3>
         <ul className="space-y-2 text-gray-600 text-sm">
-          <li><strong>Chest:</strong> Measure around the fullest part of your chest, keeping the tape measure horizontal.</li>
-          <li><strong>Waist:</strong> Measure around your natural waistline, keeping the tape comfortably loose.</li>
-          <li><strong>Hip:</strong> Measure around the fullest part of your hips.</li>
+          <li><strong>{t('sizeGuide.chest')}:</strong> {t('sizeGuide.chestGuide')}</li>
+          <li><strong>{t('sizeGuide.waist')}:</strong> {t('sizeGuide.waistGuide')}</li>
+          <li><strong>{t('sizeGuide.hip')}:</strong> {t('sizeGuide.hipGuide')}</li>
         </ul>
       </div>
     </div>

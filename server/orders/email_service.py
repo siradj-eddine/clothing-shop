@@ -32,3 +32,29 @@ def send_order_confirmation_email(order, order_items):
     except Exception as e:
         print(f"❌ FAILED: {e}")
         return False
+
+def send_order_status_email(order, old_status, new_status):
+    """Send order status update email to customer"""
+    try:
+        print(f"=== SENDING STATUS UPDATE EMAIL ===")
+        print(f"Order ID: {order.id}")
+        print(f"Customer Email: {order.customer_email}")
+        print(f"Status change: {old_status} → {new_status}")
+        
+        html_content = get_order_status_email(order, old_status, new_status)
+        plain_text = strip_tags(html_content)
+        
+        result = send_mail(
+            subject=f"Order #{order.id} Status Update - {new_status.upper()}",
+            message=plain_text,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[order.customer_email],
+            html_message=html_content,
+            fail_silently=False,
+        )
+        print(f"✅ Status update email sent to {order.customer_email}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to send status email: {e}")
+        return False

@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { productsApi } from '@/lib/api';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Header() {
+  const { t } = useTranslation();
   const { totalItems } = useCart();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,18 +21,17 @@ export default function Header() {
   
   const shopDropdownRef = useRef<HTMLDivElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     setIsLoggedIn(!!token);
     
-    // Fetch categories for dropdown
     productsApi.getCategories()
       .then(setCategories)
       .catch(console.error);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (shopDropdownRef.current && !shopDropdownRef.current.contains(event.target as Node)) {
@@ -44,17 +46,29 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     setIsLoggedIn(false);
     router.push('/');
+    setIsMenuOpen(false);
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/product?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
       setIsMenuOpen(false);
     }
@@ -62,14 +76,14 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-xl shadow-sm border-b border-gray-100">
+      <header className="fixed top-0 w-full z-[100] bg-white shadow-md border-b border-gray-100">
         {/* Top Bar - Announcement */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2.5 text-sm font-medium">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-center py-2 text-xs md:text-sm font-medium">
           <span className="inline-flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Free shipping on orders over 10000 DZD 
+            {t('productDetail.freeShipping')}
           </span>
         </div>
 
@@ -78,7 +92,8 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200"
+            className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 z-[101] relative"
+            aria-label="Menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMenuOpen ? (
@@ -90,11 +105,8 @@ export default function Header() {
           </button>
 
           {/* Logo */}
-          <Link 
-            href="/" 
-            className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent hover:from-blue-700 hover:to-blue-900 transition-all"
-          >
-            Brother's Clothing
+          <Link href={'/'}>
+            <img src="/logo.png" alt="Logo" className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -105,22 +117,21 @@ export default function Header() {
                 onClick={() => setIsShopDropdownOpen(!isShopDropdownOpen)}
                 className="flex items-center gap-1 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
               >
-                Shop All
+                {t('nav.shopAll')}
                 <svg className={`w-4 h-4 transition-transform duration-200 ${isShopDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               
-              {/* Dropdown Menu */}
               {isShopDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden animate-fadeIn z-50">
+                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-[200]">
                   <div className="py-2">
                     <Link 
                       href="/product" 
                       className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                       onClick={() => setIsShopDropdownOpen(false)}
                     >
-                      All Products
+                      {t('products.allProducts')}
                     </Link>
                     <div className="border-t border-gray-100 my-1"></div>
                     {categories.map((category) => (
@@ -142,18 +153,65 @@ export default function Header() {
               href="/about" 
               className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
             >
-              About Us
+              {t('nav.aboutUs')}
             </Link>
             <Link 
               href="/contact" 
               className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
             >
-              Contact Us
+              {t('nav.contactUs')}
             </Link>
           </nav>
 
           {/* Right Icons */}
           <div className="flex items-center space-x-3">
+            <LanguageSwitcher />
+            {/* Account Dropdown */}
+            <div className="relative" ref={accountDropdownRef}>
+              <button
+                onClick={() => setIsAccountOpen(!isAccountOpen)}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-all duration-200"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
+
+              {isAccountOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-[200]">
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/account/profile"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                        onClick={() => setIsAccountOpen(false)}
+                      >
+                        {t('nav.myAccount')}
+                      </Link>
+                      <div className="border-t border-gray-100"></div>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsAccountOpen(false);
+                        }}
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                      >
+                        {t('nav.logout')}
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/admin-login"
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      onClick={() => setIsAccountOpen(false)}
+                    >
+                      {t('nav.adminLogin')}
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Cart */}
             <Link href="/cart" className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition-all duration-200">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,15 +227,21 @@ export default function Header() {
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden fixed inset-0 top-[72px] bg-white z-40 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="p-4 flex flex-col h-full overflow-y-auto">
+        <div 
+          ref={mobileMenuRef}
+          className={`fixed inset-0 top-[72px] bg-white z-[200] transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          } md:hidden`}
+          style={{ height: 'calc(100vh - 72px)' }}
+        >
+          <div className="p-4 flex flex-col h-full">
             {/* Search */}
             <form onSubmit={handleSearch} className="relative mb-6">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products..."
+                placeholder={t('nav.search')}
                 className="w-full px-4 py-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               />
               <svg className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +255,7 @@ export default function Header() {
                 onClick={() => setIsShopDropdownOpen(!isShopDropdownOpen)}
                 className="flex items-center justify-between px-4 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all w-full"
               >
-                Shop All
+                {t('nav.shopAll')}
                 <svg className={`w-4 h-4 transition-transform duration-200 ${isShopDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -207,7 +271,7 @@ export default function Header() {
                       setIsShopDropdownOpen(false);
                     }}
                   >
-                    All Products
+                    {t('products.allProducts')}
                   </Link>
                   {categories.map((category) => (
                     <Link
@@ -231,81 +295,22 @@ export default function Header() {
                 className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
-                About Us
+                {t('nav.aboutUs')}
               </Link>
               <Link
                 href="/contact"
                 className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Contact Us
+                {t('nav.contactUs')}
               </Link>
             </nav>
-
-            <div className="border-t border-gray-100 my-4"></div>
-
-            {/* Mobile Account Links */}
-            <div className="flex flex-col space-y-1">
-              {isLoggedIn ? (
-                <>
-                  <Link
-                    href="/account/profile"
-                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    My Account
-                  </Link>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/admin-login"
-                  className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                  Admin Login
-                </Link>
-              )}
-            </div>
           </div>
         </div>
       </header>
 
       {/* Spacer */}
       <div className="h-[72px]"></div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-      `}</style>
     </>
   );
 }

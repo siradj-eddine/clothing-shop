@@ -51,7 +51,7 @@ export default function EditProductPage() {
         price: product.price,
         category: product.category?.toString() || '',
         stock: product.stock.toString(),
-        sizes: product.sizes || (product.size ? [product.size] : []),
+        sizes: product.sizes || [], 
         colors: product.colors || [],
         is_active: product.is_active,
       });
@@ -154,7 +154,7 @@ export default function EditProductPage() {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
-        category: formData.category ? parseInt(formData.category) : null,
+        category: formData.category ? parseInt(formData.category) : undefined,
         stock: parseInt(formData.stock),
         sizes: formData.sizes,
         colors: formData.colors,

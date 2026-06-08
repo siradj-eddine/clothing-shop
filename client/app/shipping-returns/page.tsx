@@ -1,37 +1,43 @@
+'use client';
+
+import { useTranslation } from 'react-i18next';
+
 export default function ShippingReturnsPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">Shipping & Returns</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('shipping.title')}</h1>
       
       <div className="space-y-8">
         <section>
-          <h2 className="text-xl font-semibold mb-4">Shipping Policy</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('shipping.shippingPolicy')}</h2>
           <div className="space-y-3 text-gray-600">
-            <p>We offer free standard shipping on all orders over $100 within the continental United States.</p>
-            <p>Standard Shipping (5-7 business days): $5.99</p>
-            <p>Express Shipping (2-3 business days): $12.99</p>
-            <p>Overnight Shipping (1-2 business days): $24.99</p>
-            <p className="mt-4">Orders are processed within 1-2 business days. You will receive a tracking number once your order ships.</p>
+            <p>{t('shipping.freeShipping')}</p>
+            <p>{t('shipping.standardShipping')}</p>
+            <p>{t('shipping.expressShipping')}</p>
+            <p>{t('shipping.overnightShipping')}</p>
+            <p className="mt-4">{t('shipping.processTime')}</p>
           </div>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">Return Policy</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('shipping.returnPolicy')}</h2>
           <div className="space-y-3 text-gray-600">
-            <p>We want you to love your purchase. If you're not completely satisfied, you may return unworn, unwashed items within 30 days of delivery for a full refund.</p>
-            <p>To be eligible for a return:</p>
+            <p>{t('shipping.returnText')}</p>
+            <p>{t('shipping.eligible')}</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Items must be unworn and unwashed</li>
-              <li>Original tags must still be attached</li>
-              <li>Items must be in original packaging</li>
+              <li>{t('shipping.eligible1')}</li>
+              <li>{t('shipping.eligible2')}</li>
+              <li>{t('shipping.eligible3')}</li>
             </ul>
-            <p className="mt-4">To initiate a return, please contact our customer service team at returns@brothershop.com</p>
+            <p className="mt-4">{t('shipping.initiateReturn')}</p>
           </div>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold mb-4">Refunds</h2>
-          <p className="text-gray-600">Once we receive your return, we will inspect the item and process your refund within 5-7 business days. Refunds will be issued to your original payment method.</p>
+          <h2 className="text-xl font-semibold mb-4">{t('shipping.refunds')}</h2>
+          <p className="text-gray-600">{t('shipping.refundsText')}</p>
         </section>
       </div>
     </div>

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'orders',
     'cart',
     'dashboard',
+    'contact',
 ]
 
 EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
@@ -166,9 +167,13 @@ MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
 
 
+# ==========================================================
 # EMAIL CONFIGURATION
+# ==========================================================
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+BREVO_API_KEY = os.getenv('BREVO_API_KEY')
+# Change to SMTP for production
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -194,7 +199,13 @@ CACHES = {
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 50,
+                'timeout': 20,
+            },
         },
+        'KEY_PREFIX': 'brother_clothing',
+        'TIMEOUT': 300,  # 5 minutes default
     }
 }
 # JWT Blacklist (store revoked tokens in Redis)

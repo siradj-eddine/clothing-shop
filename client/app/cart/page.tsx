@@ -4,9 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export default function CartPage() {
+  const { t } = useTranslation();
   const { cart, updateQuantity, removeItem, clearCart, isLoading } = useCart();
   const [updatingId, setUpdatingId] = useState<number | null>(null);
 
@@ -17,7 +19,7 @@ export default function CartPage() {
     
     try {
       await updateQuantity(itemId, newQuantity);
-      toast.success('Quantity updated');
+      toast.success(t('cart.updateSuccess') || 'Quantity updated');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to update quantity');
     } finally {
@@ -29,7 +31,7 @@ export default function CartPage() {
     if (confirm(`Remove "${itemName}" from your cart?`)) {
       try {
         await removeItem(itemId);
-        toast.success('Item removed');
+        toast.success(t('cart.removeSuccess') || 'Item removed');
       } catch (error: any) {
         toast.error(error.response?.data?.message || 'Failed to remove item');
       }
@@ -50,14 +52,14 @@ export default function CartPage() {
         <div className="w-24 h-24 bg-surface-variant rounded-full flex items-center justify-center mx-auto mb-6">
           <span className="material-symbols-outlined text-4xl text-on-surface-variant">shopping_cart</span>
         </div>
-        <h2 className="font-headline-sm text-headline-sm text-on-surface mb-4">Your cart is empty</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant mb-8">Looks like you haven't added any items yet.</p>
+        <h2 className="font-headline-sm text-headline-sm text-on-surface mb-4">{t('cart.emptyCart')}</h2>
+        <p className="font-body-md text-body-md text-on-surface-variant mb-8">{t('cart.emptyCartMessage')}</p>
         <Link
-          href="/products"
+          href="/product"
           className="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-lg hover:bg-primary-container transition-colors"
         >
           <span className="material-symbols-outlined">arrow_back</span>
-          Continue Shopping
+          {t('cart.continueShopping')}
         </Link>
       </div>
     );
@@ -72,10 +74,10 @@ export default function CartPage() {
   return (
     <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
       <div className="mb-8">
-        <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Shopping Cart</h1>
+        <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">{t('cart.title')}</h1>
         <Link href="/product" className="inline-flex items-center text-primary font-label-md text-label-md hover:text-primary-container transition-colors">
           <span className="material-symbols-outlined text-[18px] mr-1">arrow_back</span>
-          Continue Shopping
+          {t('cart.continueShopping')}
         </Link>
       </div>
 
@@ -163,7 +165,7 @@ export default function CartPage() {
               className="text-error hover:underline font-label-md text-label-md flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
-              Clear Cart
+              {t('cart.clearCart')}
             </button>
           </div>
         </div>
@@ -171,32 +173,32 @@ export default function CartPage() {
         {/* Order Summary Sidebar */}
         <div className="lg:col-span-4">
           <div className="sticky top-[100px] bg-surface-container-low rounded-2xl p-8 shadow-md border border-outline-variant/30">
-            <h2 className="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-outline-variant pb-4">Order Summary</h2>
+            <h2 className="font-headline-sm text-headline-sm text-on-surface mb-6 border-b border-outline-variant pb-4">{t('cart.orderSummary')}</h2>
             
             <div className="space-y-4 mb-6">
               <div className="flex justify-between items-center">
-                <span className="font-body-md text-body-md text-on-surface-variant">Subtotal ({cart.total_items} items)</span>
+                <span className="font-body-md text-body-md text-on-surface-variant">{t('cart.subtotal')} ({cart.total_items} items)</span>
                 <span className="font-label-md text-label-md text-on-surface font-semibold">{formatDA(subtotal)}</span>
               </div>
             </div>
             
             <div className="border-t border-outline-variant pt-6 mb-8">
               <div className="flex justify-between items-center">
-                <span className="font-title-lg text-title-lg text-on-surface">Total</span>
+                <span className="font-title-lg text-title-lg text-on-surface">{t('cart.total')}</span>
                 <span className="font-headline-sm text-headline-sm text-on-surface font-bold">{formatDA(subtotal)}</span>
               </div>
             </div>
             
             <Link href="/checkout">
               <button className="w-full bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md py-4 rounded-full transition-all duration-300 flex justify-center items-center gap-2">
-                Proceed to Checkout
+                {t('cart.proceedToCheckout')}
                 <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
               </button>
             </Link>
             
             <div className="mt-6 flex items-center justify-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
               <span className="material-symbols-outlined text-[16px]">lock</span>
-              Secure Checkout
+              {t('cart.secureCheckout')}
             </div>
           </div>
         </div>

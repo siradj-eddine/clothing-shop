@@ -14,7 +14,7 @@ interface OrderItem {
   color: string;
 }
 
-interface OrderWithItems extends Order {
+interface OrderWithItems extends Omit<Order, 'items'> {
   items?: OrderItem[];
   subtotal?: string;
   shipping_cost?: string;
@@ -198,7 +198,6 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="font-headline-md text-headline-md text-on-surface">Orders</h1>
@@ -208,61 +207,39 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilterStatus('all')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-            filterStatus === 'all'
-              ? 'bg-primary text-white'
-              : 'bg-surface text-on-surface-variant border border-outline-variant hover:bg-surface-container-low'
-          }`}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'all' ? 'bg-primary text-white' : 'bg-surface text-on-surface-variant border border-outline-variant hover:bg-surface-container-low'}`}
         >
           All Orders ({orders.length})
         </button>
         <button
           onClick={() => setFilterStatus('pending')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-            filterStatus === 'pending'
-              ? 'bg-yellow-500 text-white'
-              : 'bg-surface text-yellow-700 border border-yellow-300 hover:bg-yellow-50'
-          }`}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'pending' ? 'bg-yellow-500 text-white' : 'bg-surface text-yellow-700 border border-yellow-300 hover:bg-yellow-50'}`}
         >
           Pending ({pendingCount})
         </button>
         <button
           onClick={() => setFilterStatus('paid')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-            filterStatus === 'paid'
-              ? 'bg-blue-500 text-white'
-              : 'bg-surface text-blue-700 border border-blue-300 hover:bg-blue-50'
-          }`}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'paid' ? 'bg-blue-500 text-white' : 'bg-surface text-blue-700 border border-blue-300 hover:bg-blue-50'}`}
         >
           Paid ({paidCount})
         </button>
         <button
           onClick={() => setFilterStatus('delivered')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-            filterStatus === 'delivered'
-              ? 'bg-green-500 text-white'
-              : 'bg-surface text-green-700 border border-green-300 hover:bg-green-50'
-          }`}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'delivered' ? 'bg-green-500 text-white' : 'bg-surface text-green-700 border border-green-300 hover:bg-green-50'}`}
         >
           Delivered ({deliveredCount})
         </button>
         <button
           onClick={() => setFilterStatus('cancelled')}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-            filterStatus === 'cancelled'
-              ? 'bg-red-500 text-white'
-              : 'bg-surface text-red-700 border border-red-300 hover:bg-red-50'
-          }`}
+          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'cancelled' ? 'bg-red-500 text-white' : 'bg-surface text-red-700 border border-red-300 hover:bg-red-50'}`}
         >
           Cancelled ({cancelledCount})
         </button>
       </div>
 
-      {/* Orders Table */}
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -385,7 +362,6 @@ export default function AdminOrdersPage() {
               </div>
             ) : (
               <div className="p-6 space-y-6">
-                {/* Customer Info */}
                 <div>
                   <h3 className="font-semibold text-lg mb-3">Customer Information</h3>
                   <div className="bg-gray-50 p-4 rounded-lg space-y-2">
@@ -397,7 +373,6 @@ export default function AdminOrdersPage() {
                   </div>
                 </div>
 
-                {/* Order Summary with Subtotal, Shipping, Total */}
                 <div>
                   <h3 className="font-semibold text-lg mb-3">Order Summary</h3>
                   <div className="bg-gray-50 p-4 rounded-lg space-y-2">
@@ -416,7 +391,6 @@ export default function AdminOrdersPage() {
                   </div>
                 </div>
 
-                {/* Order Items */}
                 <div>
                   <h3 className="font-semibold text-lg mb-3">Order Items</h3>
                   {selectedOrder.items && selectedOrder.items.length > 0 ? (

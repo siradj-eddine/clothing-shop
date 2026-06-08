@@ -5,8 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ordersApi } from '@/lib/api';
 import { Order } from '@/lib/types';
+import { useTranslation } from 'react-i18next';
 
 export default function OrderConfirmationPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
@@ -48,20 +50,20 @@ export default function OrderConfirmationPage() {
         {/* Success Message */}
         <div className="text-center">
           <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-4">
-            Thank you for your order
+            {t('orderConfirmation.thankYou')}
           </h1>
           <p className="font-body-lg text-body-lg text-secondary mb-2">
-            Order #{order.id}
+            {t('orderConfirmation.orderId')} #{order.id}
           </p>
           <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
-            We've received your order and are getting it ready. A confirmation email has been sent to <strong>{order.customer_email}</strong>.
+            {t('orderConfirmation.orderReceived')} {t('orderConfirmation.confirmationEmail', { email: order.customer_email })}
           </p>
         </div>
 
         {/* Order Details Card */}
         <div className="w-full bg-surface-container-lowest rounded-xl shadow-sm mt-12 overflow-hidden border border-outline-variant/30">
           <div className="p-8 md:p-10">
-            <h2 className="font-title-lg text-title-lg text-on-surface mb-8">Order Summary</h2>
+            <h2 className="font-title-lg text-title-lg text-on-surface mb-8">{t('orderConfirmation.orderSummary')}</h2>
 
             {/* Items List */}
             <div className="space-y-6">
@@ -71,7 +73,7 @@ export default function OrderConfirmationPage() {
                   <div className="flex-grow">
                     <h3 className="font-label-md text-label-md text-on-surface">{item.product_name}</h3>
                     <p className="font-body-md text-body-md text-secondary mt-1">
-                      {item.size && `${item.size} / `}{item.color && `${item.color} / `}Qty {item.quantity}
+                      {item.size && `${item.size} / `}{item.color && `${item.color} / `}{t('cart.quantity')} {item.quantity}
                     </p>
                   </div>
                   <div className="text-right">
@@ -89,7 +91,7 @@ export default function OrderConfirmationPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h4 className="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-3">
-                  Shipping Address
+                  {t('orderConfirmation.shippingAddress')}
                 </h4>
                 <p className="font-body-md text-body-md text-on-surface whitespace-pre-line">
                   {order.shipping_address}
@@ -98,7 +100,7 @@ export default function OrderConfirmationPage() {
               <div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-on-surface-variant">Total</span>
+                    <span className="text-on-surface-variant">{t('cart.total')}</span>
                     <span className="font-bold">{formatDA(parseFloat(order.total))}</span>
                   </div>
                 </div>
@@ -110,11 +112,11 @@ export default function OrderConfirmationPage() {
           <div className="bg-surface-container-low px-8 py-6 flex justify-between items-center border-t border-outline-variant/20">
             <div className="flex items-center gap-3 text-secondary">
               <span className="material-symbols-outlined text-[20px]">local_shipping</span>
-              <span className="font-body-md text-body-md">You can track your order in your account.</span>
+              <span className="font-body-md text-body-md">{t('orderConfirmation.trackOrder')}</span>
             </div>
-            <Link href="/products">
+            <Link href="/product">
               <button className="bg-primary text-on-primary font-label-md text-label-md px-6 py-2 rounded-full hover:bg-primary-container transition-all">
-                Continue Shopping
+                {t('orderConfirmation.continueShopping')}
               </button>
             </Link>
           </div>

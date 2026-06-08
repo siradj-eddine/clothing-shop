@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,11 +19,21 @@ export default function ContactPage() {
     e.preventDefault();
     setLoading(true);
     
-    setTimeout(() => {
-      toast.success('Message sent! We\'ll get back to you soon.');
+    try {
+      const response = await axios.post('http://localhost:8000/api/contact/', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      toast.success(response.data.message || t('contact.success'));
       setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error: any) {
+      console.error('Contact error:', error);
+      toast.error(error.response?.data?.message || t('contact.error'));
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -32,8 +45,8 @@ export default function ContactPage() {
           {/* Map Card */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
             <div className="p-6 bg-gray-50 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-800">Find Us</h2>
-              <p className="text-gray-500 text-sm mt-1">Brothers Shop - Constantine, Nouvelle Ville</p>
+              <h2 className="text-xl font-semibold text-gray-800">{t('contact.findUs')}</h2>
+              <p className="text-gray-500 text-sm mt-1">{t('common.location')}</p>
             </div>
             <div className="h-80 w-full bg-gray-200">
               <iframe
@@ -60,11 +73,11 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-gray-800 mb-1">Email Us</h3>
+                  <h3 className="font-semibold text-lg text-gray-800 mb-1">{t('contact.emailUs')}</h3>
                   <a href="mailto:siradjboulemaiz@gmail.com" className="text-gray-600 hover:text-blue-600 transition-colors">
                     siradjboulemaiz@gmail.com
                   </a>
-                  <p className="text-sm text-gray-400 mt-2">We'll respond within 24 hours</p>
+                  <p className="text-sm text-gray-400 mt-2">{t('contact.emailResponse')}</p>
                 </div>
               </div>
             </div>
@@ -78,11 +91,11 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-gray-800 mb-1">Call Us</h3>
+                  <h3 className="font-semibold text-lg text-gray-800 mb-1">{t('contact.callUs')}</h3>
                   <a href="tel:0782268236" className="text-gray-600 hover:text-blue-600 transition-colors">
                     0782268236
                   </a>
-                  <p className="text-sm text-gray-400 mt-2">Sat-Thu, 9am - 6pm</p>
+                  <p className="text-sm text-gray-400 mt-2">{t('contact.hours')}</p>
                 </div>
               </div>
             </div>
@@ -97,12 +110,12 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg text-gray-800 mb-1">Visit Us</h3>
+                  <h3 className="font-semibold text-lg text-gray-800 mb-1">{t('contact.visitUs')}</h3>
                   <p className="text-gray-600">
-                    BROTHERS SHOP<br />
-                    Constantine, Nouvelle Ville
+                    {t('common.siteName')}<br />
+                    {t('common.location')}
                   </p>
-                  <p className="text-sm text-gray-400 mt-2">Showroom open by appointment</p>
+                  <p className="text-sm text-gray-400 mt-2">{t('contact.showroom')}</p>
                 </div>
               </div>
             </div>
@@ -114,7 +127,7 @@ export default function ContactPage() {
           {/* Social Media Card */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 sticky top-24">
-              <h3 className="font-semibold text-lg text-gray-800 mb-4">Follow Us</h3>
+              <h3 className="font-semibold text-lg text-gray-800 mb-4">{t('contact.followUs')}</h3>
               <div className="flex gap-4 mb-6">
                 <a href="#" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors group">
                   <svg className="w-5 h-5 text-gray-600 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -128,12 +141,12 @@ export default function ContactPage() {
                 </a>
                 <a href="#" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors group">
                   <svg className="w-5 h-5 text-gray-600 group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z" />
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8z" />
                   </svg>
                 </a>
               </div>
               <div className="border-t border-gray-100 pt-4">
-                <p className="text-sm text-gray-500">Follow us for updates, new arrivals, and exclusive offers.</p>
+                <p className="text-sm text-gray-500">{t('contact.followText')}</p>
               </div>
             </div>
           </div>
@@ -141,11 +154,11 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('contact.sendMessage')}</h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('contact.yourName')} *</label>
                   <input
                     type="text"
                     required
@@ -156,7 +169,7 @@ export default function ContactPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('contact.yourEmail')} *</label>
                   <input
                     type="email"
                     required
@@ -169,7 +182,7 @@ export default function ContactPage() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('contact.subject')} *</label>
                 <input
                   type="text"
                   required
@@ -181,7 +194,7 @@ export default function ContactPage() {
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('contact.yourMessage')} *</label>
                 <textarea
                   required
                   rows={5}
@@ -203,10 +216,10 @@ export default function ContactPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Sending...
+                    {t('contact.sending')}
                   </span>
                 ) : (
-                  'Send Message'
+                  t('contact.send')
                 )}
               </button>
             </form>

@@ -6,15 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
+    "@next/bundle-analyzer": "^16.2.7",
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query-devtools": "^5.101.0",
     "axios": "^1.7.2",
     "html2pdf.js": "^0.14.0",
+    "i18next": "^26.3.1",
     "next": "14.2.3",
+    "next-i18next": "^16.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
+    "react-i18next": "^17.0.8",
     "swr": "^2.2.5"
   },
   "devDependencies": {

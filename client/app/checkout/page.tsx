@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { ordersApi } from '@/lib/api';
 import { wilayas, getShippingCost } from '@/lib/wilayas';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { cart, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
@@ -71,7 +73,7 @@ export default function CheckoutPage() {
       });
 
       await clearCart();
-      toast.success('Order placed successfully!');
+      toast.success(t('checkout.success') || 'Order placed successfully!');
       router.push(`/order-confirmation/${order.id}`);
     } catch (error: any) {
       console.error('Checkout error:', error);
@@ -87,7 +89,7 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
       <div className="mb-8">
-        <h1 className="font-headline-md text-headline-md text-on-surface">Checkout</h1>
+        <h1 className="font-headline-md text-headline-md text-on-surface">{t('checkout.title')}</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
@@ -96,11 +98,11 @@ export default function CheckoutPage() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Contact Information */}
             <div>
-              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">Contact Information</h2>
+              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">{t('checkout.contactInfo')}</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
-                    Email Address
+                    {t('checkout.emailAddress')}
                   </label>
                   <input
                     type="email"
@@ -116,12 +118,12 @@ export default function CheckoutPage() {
 
             {/* Shipping Address */}
             <div>
-              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">Shipping Address</h2>
+              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">{t('checkout.shippingAddress')}</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
-                      Full Name
+                      {t('checkout.fullName')}
                     </label>
                     <input
                       type="text"
@@ -133,7 +135,7 @@ export default function CheckoutPage() {
                   </div>
                   <div>
                     <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
-                      Phone Number
+                      {t('checkout.phoneNumber')}
                     </label>
                     <input
                       type="tel"
@@ -148,7 +150,7 @@ export default function CheckoutPage() {
                 {/* Wilaya Selector */}
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
-                    Wilaya (State)
+                    {t('checkout.wilaya')}
                   </label>
                   <select
                     required
@@ -171,7 +173,7 @@ export default function CheckoutPage() {
 
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
-                    Street Address
+                    {t('checkout.streetAddress')}
                   </label>
                   <textarea
                     required
@@ -195,7 +197,7 @@ export default function CheckoutPage() {
               ) : (
                 <>
                   <span className="material-symbols-outlined text-[18px]">lock</span>
-                  Place Order
+                  {t('checkout.placeOrder')}
                 </>
               )}
             </button>
@@ -205,7 +207,7 @@ export default function CheckoutPage() {
         {/* Order Summary */}
         <div className="lg:col-span-5">
           <div className="sticky top-[100px] bg-surface-container-low rounded-xl p-6 shadow-md">
-            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">Order Summary</h3>
+            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{t('checkout.orderSummary')}</h3>
             
             <div className="space-y-4 max-h-[400px] overflow-y-auto mb-6">
               {cart.items.map((item) => {
@@ -241,18 +243,18 @@ export default function CheckoutPage() {
 
             <div className="border-t border-outline-variant pt-4 space-y-2">
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Subtotal</span>
+                <span className="text-on-surface-variant">{t('cart.subtotal')}</span>
                 <span className="text-on-surface">{formatDA(subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-on-surface-variant">Shipping</span>
+                <span className="text-on-surface-variant">{t('cart.shipping')}</span>
                 <span className="text-on-surface">
                   {isFreeShipping ? 'Free' : formatDA(shippingCost)}
                 </span>
               </div>
               <div className="border-t border-outline-variant pt-4 mt-2">
                 <div className="flex justify-between font-bold text-lg">
-                  <span>Total</span>
+                  <span>{t('cart.total')}</span>
                   <span>{formatDA(total)}</span>
                 </div>
               </div>

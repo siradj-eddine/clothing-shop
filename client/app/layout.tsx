@@ -1,25 +1,32 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { CartProvider } from '@/context/CartContext';
+import QueryProvider from '@/providers/QueryProvider';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '@/app/i18n';
+import { useEffect } from 'react';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: "Brother's Clothing Shop",
-  description: 'Quality clothing for everyone',
-};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Set RTL direction for Arabic
+  useEffect(() => {
+    const savedLang = localStorage.getItem('language') || 'en';
+    document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = savedLang;
+  }, []);
+
   return (
-    <html lang="en">
+    <html lang="en" dir="ltr">
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -27,12 +34,16 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <CartProvider>
-          <Header />
-          <main className="min-h-screen pt-20">{children}</main>
-          <Footer />
-          <Toaster position="top-right" />
-        </CartProvider>
+        <I18nextProvider i18n={i18n}>
+          <QueryProvider>
+            <CartProvider>
+              <Header />
+              <main className="min-h-screen pt-20">{children}</main>
+              <Footer />
+              <Toaster position="top-right" />
+            </CartProvider>
+          </QueryProvider>
+        </I18nextProvider>
       </body>
     </html>
   );

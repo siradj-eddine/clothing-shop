@@ -1,32 +1,38 @@
+'use client';
+
+import { useTranslation } from 'react-i18next';
+
 export default function PrivacyPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8">Privacy Policy</h1>
+      <h1 className="text-3xl font-bold mb-8">{t('privacy.title')}</h1>
       
       <div className="space-y-6 text-gray-600">
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">Information We Collect</h2>
-          <p>We collect information you provide directly to us, such as when you create an account, place an order, or contact customer service. This may include your name, email address, shipping address, and payment information.</p>
+          <h2 className="text-xl font-semibold text-gray-800 mb-3">{t('privacy.infoCollect')}</h2>
+          <p>{t('privacy.infoCollectText')}</p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">How We Use Your Information</h2>
-          <p>We use your information to process orders, communicate with you about your order, and improve our services. We do not sell your personal information to third parties.</p>
+          <h2 className="text-xl font-semibold text-gray-800 mb-3">{t('privacy.useInfo')}</h2>
+          <p>{t('privacy.useInfoText')}</p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">Security</h2>
-          <p>We implement appropriate security measures to protect your personal information. All payment information is encrypted using SSL technology.</p>
+          <h2 className="text-xl font-semibold text-gray-800 mb-3">{t('privacy.security')}</h2>
+          <p>{t('privacy.securityText')}</p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">Cookies</h2>
-          <p>We use cookies to enhance your browsing experience and analyze site traffic. You can disable cookies in your browser settings.</p>
+          <h2 className="text-xl font-semibold text-gray-800 mb-3">{t('privacy.cookies')}</h2>
+          <p>{t('privacy.cookiesText')}</p>
         </section>
 
         <section>
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">Contact Us</h2>
-          <p>If you have questions about this privacy policy, please contact us at privacy@brothershop.com</p>
+          <h2 className="text-xl font-semibold text-gray-800 mb-3">{t('privacy.contact')}</h2>
+          <p>{t('privacy.contactText')}</p>
         </section>
       </div>
     </div>

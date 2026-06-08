@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from decimal import Decimal
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, OrderCreateSerializer
-from .email_service import send_order_confirmation_email
+from .email_service import send_order_confirmation_email, send_order_status_email
 from products.stock_service import StockService
 
 class OrderListView(generics.ListAPIView):
@@ -18,6 +18,28 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
     lookup_field = 'pk'
+    
+    def update(self, request, *args, **kwargs):
+        """Update order and send email notification"""
+        instance = self.get_object()
+        old_status = instance.status
+        
+        # Get the new status from request
+        new_status = request.data.get('status')
+        
+        print(f"=== STATUS UPDATE: Order {instance.id} from {old_status} to {new_status} ===")
+        
+        # Update the order
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        # Send email if status changed
+        if new_status and new_status != old_status:
+            print(f"=== SENDING STATUS UPDATE EMAIL ===")
+            send_order_status_email(instance, old_status, new_status)
+        
+        return Response(serializer.data)
 
 class OrderCreateView(generics.CreateAPIView):
     serializer_class = OrderCreateSerializer
@@ -39,12 +61,11 @@ class OrderCreateView(generics.CreateAPIView):
         customer_phone = data.get('customer_phone', '')
         shipping_address = data['shipping_address']
         
-        # Get subtotal, shipping_cost, total (use provided or calculate)
+        # Get subtotal, shipping_cost, total
         subtotal = Decimal(str(data.get('subtotal', 0)))
         shipping_cost = Decimal(str(data.get('shipping_cost', 0)))
         total = Decimal(str(data.get('total', 0)))
         
-        # If total is 0, calculate from items
         if total == 0:
             for item in data['items']:
                 price = Decimal(str(item['product_price']))
@@ -68,8 +89,10 @@ class OrderCreateView(generics.CreateAPIView):
         
         print(f"Order created: {order.id}")
         
-        # Create order items
+        # Create order items and prepare items_data for stock deduction
         order_items = []
+        items_data = []
+        
         for item in data['items']:
             order_item = OrderItem.objects.create(
                 order=order,
@@ -80,13 +103,32 @@ class OrderCreateView(generics.CreateAPIView):
                 color=item.get('color', '')
             )
             order_items.append(order_item)
+            
+            # Add to items_data for stock deduction
+            items_data.append({
+                'product_id': item.get('product_id'),
+                'quantity': int(item['quantity'])
+            })
         
         print(f"Created {len(order_items)} order items")
+        
+        # ==========================================================
+        # STOCK DEDUCTION - ADD THIS SECTION
+        # ==========================================================
+        stock_confirmed = StockService.confirm_stock_deduction(order, items_data)
+        
+        if not stock_confirmed:
+            order.status = 'cancelled'
+            order.save()
+            return Response({'error': 'Stock unavailable. Order cancelled.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(f"Stock deducted successfully")
+        # ==========================================================
         
         # Send order confirmation email
         send_order_confirmation_email(order, order_items)
         
-        # Clear cart after successful order
+        # Clear cart
         session_key = request.session.session_key
         if session_key:
             try:
