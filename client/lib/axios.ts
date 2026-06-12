@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+// IMPORTANT: This must be a hardcoded URL for production
+// Vercel's build process embeds this at build time
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
+
+console.log('API_URL:', API_URL); // This will show in browser console
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: `${API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,7 +38,7 @@ axiosInstance.interceptors.response.use(
       const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
         try {
-          const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+          const response = await axios.post(`${API_URL}/api/token/refresh/`, {
             refresh: refreshToken,
           });
           

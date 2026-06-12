@@ -4,7 +4,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 
 module.exports = withBundleAnalyzer({
-  // output: 'standalone',  // COMMENT THIS OUT temporarily
+  output: 'standalone',
   images: {
     domains: [
       'imagedelivery.net',
@@ -16,14 +16,7 @@ module.exports = withBundleAnalyzer({
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*',
-      },
-    ];
-  },
+  // REMOVE the rewrites section completely
   async headers() {
     return [
       {
