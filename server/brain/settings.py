@@ -182,27 +182,38 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Redis Configuration
-REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
+# Redis Configuration - Make it optional
+REDIS_HOST = os.getenv('REDIS_HOST', None)
 REDIS_PORT = os.getenv('REDIS_PORT', '6379')
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
-            'CONNECTION_POOL_CLASS_KWARGS': {
-                'max_connections': 50,
-                'timeout': 20,
+# Only use Redis if REDIS_HOST is set (not on Render free tier)
+if REDIS_HOST:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+                'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+                'CONNECTION_POOL_CLASS_KWARGS': {
+                    'max_connections': 50,
+                    'timeout': 20,
+                },
             },
-        },
-        'KEY_PREFIX': 'brother_clothing',
-        'TIMEOUT': 300,
-        'VERSION': 1,
+            'KEY_PREFIX': 'brother_clothing',
+            'TIMEOUT': 300,
+            'VERSION': 1,
+        }
     }
-}
-CACHE_VERSION_KEY = 'cache_version'
+else:
+    # Use local memory cache (works without Redis)
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+        }
+    }
+
 
 # JWT Blacklist
 JWT_BLACKLIST = {}
