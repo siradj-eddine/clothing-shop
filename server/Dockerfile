@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . .
 
+# Run migrations before starting gunicorn
+RUN python manage.py migrate
+
 RUN addgroup --system django && adduser --system --ingroup django django && \
     chown -R django:django /app
 USER django
