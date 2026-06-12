@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { productsApi } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
 import { useTranslation } from 'react-i18next';
@@ -95,7 +94,7 @@ export default function ProductsPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-gutter">
-        {/* Sidebar Filters - Desktop always visible, Mobile toggle */}
+        {/* Sidebar Filters */}
         <aside className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-full lg:w-64 flex-shrink-0 space-y-8 bg-white lg:bg-transparent rounded-xl p-6 lg:p-0 shadow-sm lg:shadow-none`}>
           {/* Categories */}
           <div>
@@ -184,7 +183,7 @@ export default function ProductsPage() {
           )}
         </aside>
 
-        {/* Product Grid - Responsive: 2 columns on mobile, 3 on desktop */}
+        {/* Product Grid */}
         <div className="flex-1">
           {products.length === 0 ? (
             <div className="text-center py-12">
@@ -195,13 +194,16 @@ export default function ProductsPage() {
               {products.map((product) => (
                 <div key={product.id} className="group relative flex flex-col">
                   <div className="relative w-full aspect-[3/4] bg-surface-container-lowest overflow-hidden rounded-lg group-hover:shadow-xl transition-all duration-300">
-                    <Link href={`/product/${product.slug}`}>
+                    <Link href={`/product/${product.slug}`} className="block w-full h-full">
                       {product.main_image_url ? (
-                        <Image
+                        <img
                           src={product.main_image_url}
                           alt={product.name}
-                          fill
-                          className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            console.error('Image failed to load:', product.main_image_url);
+                            e.currentTarget.style.display = 'none';
+                          }}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-outline">
@@ -265,7 +267,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Mobile filter overlay close when clicking outside */}
+      {/* Mobile filter overlay */}
       {isFilterOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"

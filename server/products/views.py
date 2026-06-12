@@ -17,6 +17,23 @@ from .serializers import (
 )
 
 # ==========================================================
+# CACHE MANAGEMENT UTILITY
+# ==========================================================
+
+class CacheManager:
+    """Centralized cache management for products and categories"""
+    
+    @staticmethod
+    def invalidate_all():
+        """Invalidate ALL cache (products + categories)"""
+        try:
+            # Clear all cache - simple and reliable
+            cache.clear()
+            print("✅ ALL cache cleared (products + categories + homepage)")
+        except Exception as e:
+            print(f"Cache error: {e}")
+
+# ==========================================================
 # PAGINATION
 # ==========================================================
 
@@ -43,7 +60,7 @@ class ProductListView(generics.ListAPIView):
     ordering_fields = ['price', 'created_at', 'name']
     ordering = ['-created_at']
     
-    @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
+    @method_decorator(cache_page(60 * 3))  # Cache for 3 minutes
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -54,7 +71,7 @@ class ProductDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     lookup_field = 'slug'
     
-    @method_decorator(cache_page(60 * 60))  # Cache for 1 hour
+    @method_decorator(cache_page(60 * 10))  # Cache for 10 minutes
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -82,7 +99,7 @@ class CategoryDetailView(generics.RetrieveAPIView):
     lookup_field = 'slug'
 
 # ==========================================================
-# PRODUCT ADMIN ENDPOINTS (No cache - real-time)
+# PRODUCT ADMIN ENDPOINTS (Real-time - no cache)
 # ==========================================================
 
 class ProductCreateView(generics.CreateAPIView):
@@ -93,8 +110,7 @@ class ProductCreateView(generics.CreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save()
-        # Clear cache after creating product
-        cache.delete_pattern('*.views.decorators.cache.*')
+        CacheManager.invalidate_all()
 
 class ProductUpdateView(generics.UpdateAPIView):
     """Update a product (Admin only)"""
@@ -105,8 +121,7 @@ class ProductUpdateView(generics.UpdateAPIView):
     
     def perform_update(self, serializer):
         serializer.save()
-        # Clear cache after updating product
-        cache.delete_pattern('*.views.decorators.cache.*')
+        CacheManager.invalidate_all()
 
 class ProductDeleteView(generics.DestroyAPIView):
     """Delete a product (Admin only)"""
@@ -116,8 +131,7 @@ class ProductDeleteView(generics.DestroyAPIView):
     
     def perform_destroy(self, instance):
         instance.delete()
-        # Clear cache after deleting product
-        cache.delete_pattern('*.views.decorators.cache.*')
+        CacheManager.invalidate_all()
 
 # ==========================================================
 # IMAGE UPLOAD ENDPOINTS
@@ -133,6 +147,7 @@ class ProductImageUploadView(generics.CreateAPIView):
         product_id = self.request.data.get('product')
         product = get_object_or_404(Product, id=product_id)
         serializer.save(product=product)
+        CacheManager.invalidate_all()
 
 class ProductImageView(generics.RetrieveUpdateDestroyAPIView):
     """Get, update, or delete a product image (Admin only)"""
@@ -140,6 +155,14 @@ class ProductImageView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductImageSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
     lookup_field = 'id'
+    
+    def perform_update(self, serializer):
+        serializer.save()
+        CacheManager.invalidate_all()
+    
+    def perform_destroy(self, instance):
+        instance.delete()
+        CacheManager.invalidate_all()
 
 class SetMainImageView(APIView):
     """Set an image as the main product image (Admin only)"""
@@ -155,11 +178,13 @@ class SetMainImageView(APIView):
         image.is_main = True
         image.save()
         
+        CacheManager.invalidate_all()
+        
         serializer = ProductImageSerializer(image)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # ==========================================================
-# CATEGORY ADMIN ENDPOINTS
+# CATEGORY ADMIN ENDPOINTS (Real-time - no cache)
 # ==========================================================
 
 class CategoryCreateView(generics.CreateAPIView):
@@ -170,7 +195,7 @@ class CategoryCreateView(generics.CreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save()
-        cache.delete_pattern('*.views.decorators.cache.*')
+        CacheManager.invalidate_all()
 
 class CategoryUpdateView(generics.UpdateAPIView):
     """Update a category (Admin only)"""
@@ -181,14 +206,15 @@ class CategoryUpdateView(generics.UpdateAPIView):
     
     def perform_update(self, serializer):
         serializer.save()
-        cache.delete_pattern('*.views.decorators.cache.*')
-
+        CacheManager.invalidate_all()
+        
 class CategoryDeleteView(generics.DestroyAPIView):
     """Delete a category (Admin only)"""
     queryset = Category.objects.all()
+    serializer_class = CategoryCreateUpdateSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
     lookup_field = 'slug'
     
     def perform_destroy(self, instance):
         instance.delete()
-        cache.delete_pattern('*.views.decorators.cache.*')
+        CacheManager.invalidate_all()

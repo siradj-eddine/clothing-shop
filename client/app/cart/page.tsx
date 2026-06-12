@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -88,14 +87,13 @@ export default function CartPage() {
             const itemTotal = parseFloat(item.product_price) * item.quantity;
             return (
               <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 hover:shadow-md transition-all">
-                {/* Product Image */}
+                {/* Product Image - FIXED: Using img tag instead of Next.js Image */}
                 <div className="w-full sm:w-32 h-40 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-surface-variant relative">
                   {item.product_image ? (
-                    <Image
+                    <img
                       src={item.product_image}
                       alt={item.product_name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-outline">

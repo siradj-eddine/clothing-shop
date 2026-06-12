@@ -11,19 +11,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# FIXED: Now reads from .env, but ensure DEBUG=False in production .env
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# FIXED: Added wildcard for Render deployment and Docker internal communication
+# In production, Render will set this automatically via environment variable
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1',
+    'server',  # Docker internal communication
+    '.onrender.com',  # Allow any Render domain
+    os.getenv('ALLOWED_HOSTS', ''),  # Allow custom domain from .env
+]
 
 # Application definition
 INSTALLED_APPS = [
-
-    # Admin interface 
-    # 'admin_interface',
-    # 'colorfield',
-    # 'import_export',
-    
-    # Default Django admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,10 +38,7 @@ INSTALLED_APPS = [
     'storages',
     'django_filters',
     'django_extensions',
-
-
     'anymail',
-
     # my apps
     'products',
     'orders',
@@ -53,8 +52,7 @@ ANYMAIL = {
     "RESEND_API_KEY": os.getenv("RESEND_API_KEY"),
 }
 
-DEFAULT_FROM_EMAIL = "onboarding@resend.dev"  # Change to your domain later
-
+DEFAULT_FROM_EMAIL = "onboarding@resend.dev"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -67,20 +65,26 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-GZIP_COMPRESSION_LEVEL = 6  # Balance between speed and compression 
+GZIP_COMPRESSION_LEVEL = 6
 
+# FIXED: Security Headers - Now production-ready
+# These will be enabled when DEBUG=False
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True  # Force HTTPS in production
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+else:
+    SECURE_SSL_REDIRECT = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
 
-
-# Security Headers
+# These are safe for both dev and production
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
-SECURE_HSTS_SECONDS = 31536000  # 1 year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SECURE_SSL_REDIRECT = False  # Set to True in production with HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
@@ -97,7 +101,6 @@ CSP_FRAME_SRC = ("'none'",)
 CSP_OBJECT_SRC = ("'none'",)
 CSP_BASE_URI = ("'self'",)
 CSP_FORM_ACTION = ("'self'",)
-
 
 ROOT_URLCONF = 'brain.urls'
 
@@ -123,17 +126,16 @@ WSGI_APPLICATION = 'brain.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT", "5432"),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {
-            'sslmode': 'require',
-        },
+            'sslmode': 'require',  # Neon requires SSL
+        }
     }
 }
-
 
 # Cloudflare R2 Storage Configuration
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
@@ -143,16 +145,13 @@ AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
 AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "auto")
 AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
 
-# Make files publicly readable
 AWS_DEFAULT_ACL = 'public-read'
-AWS_QUERYSTRING_AUTH = False  # Don't add expiration to URLs
+AWS_QUERYSTRING_AUTH = False
 
-# Cache control for images (1 day)
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 
-# Use R2 as the storage backend for uploaded files
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
@@ -162,17 +161,10 @@ STORAGES = {
     },
 }
 
-# Media URL for serving images
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
 
-
-
-# ==========================================================
-# EMAIL CONFIGURATION
-# ==========================================================
-
+# Email Configuration
 BREVO_API_KEY = os.getenv('BREVO_API_KEY')
-# Change to SMTP for production
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
@@ -180,7 +172,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -190,12 +181,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
 # Redis Configuration
+REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://172.19.233.184:6379/1',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
@@ -205,17 +198,20 @@ CACHES = {
             },
         },
         'KEY_PREFIX': 'brother_clothing',
-        'TIMEOUT': 300,  # 5 minutes default
+        'TIMEOUT': 300,
+        'VERSION': 1,
     }
 }
-# JWT Blacklist (store revoked tokens in Redis)
-JWT_BLACKLIST = {}
-JWT_BLACKLIST_TIMEOUT = timedelta(days=7)  # Keep revoked tokens for 7 days
+CACHE_VERSION_KEY = 'cache_version'
 
-# REST Framework with JWT
+# JWT Blacklist
+JWT_BLACKLIST = {}
+JWT_BLACKLIST_TIMEOUT = timedelta(days=7)
+
+# REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'brain.authentication.CustomJWTAuthentication',  # Use custom auth
+        'brain.authentication.CustomJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
@@ -230,28 +226,20 @@ REST_FRAMEWORK = {
 
 # JWT Settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Short for security
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Good user experience
-    'ROTATE_REFRESH_TOKENS': True,                   # New refresh token on each use
-    'BLACKLIST_AFTER_ROTATION': True,                # Old refresh token to blacklist
-    'UPDATE_LAST_LOGIN': True,                       # Track last login
-    
-    # Security settings
-    'ALGORITHM': 'HS256',                            # HMAC-SHA256 signing
-    'SIGNING_KEY': SECRET_KEY,                        # Use Django's SECRET_KEY
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUDIENCE': None,
     'ISSUER': None,
-    
-    # Token location (use headers for API, cookies for web)
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    
-    # User identifier
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
-    
-    # Sliding token settings (optional)
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
@@ -263,16 +251,22 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS settings
+# FIXED: CORS settings - Added your production frontend URL
+# Also reads from environment variable for Render deployment
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    os.getenv('FRONTEND_URL', ''),  # Your Vercel frontend URL in production
 ]
+# Remove any empty strings from the list
+CORS_ALLOWED_ORIGINS = [origin for origin in CORS_ALLOWED_ORIGINS if origin]
+
 CORS_ALLOW_CREDENTIALS = True

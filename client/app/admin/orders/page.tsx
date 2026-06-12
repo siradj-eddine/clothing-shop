@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Order } from '@/lib/types';
 import { exportOrderToPDF } from '@/lib/pdfExport';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface OrderItem {
   id: number;
@@ -21,6 +22,7 @@ interface OrderWithItems extends Omit<Order, 'items'> {
 }
 
 export default function AdminOrdersPage() {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
@@ -68,7 +70,7 @@ export default function AdminOrdersPage() {
       setSelectedOrder(data);
     } catch (error) {
       console.error('Failed to load order details:', error);
-      toast.error('Failed to load order details');
+      toast.error(t('admin.failedToLoadOrderDetails'));
     } finally {
       setLoadingDetails(false);
     }
@@ -89,10 +91,10 @@ export default function AdminOrdersPage() {
         orderWithItems = await response.json();
       }
       await exportOrderToPDF(orderWithItems, orderWithItems.items || []);
-      toast.success('PDF exported successfully!');
+      toast.success(t('admin.pdfExported'));
     } catch (error) {
       console.error('Export error:', error);
-      toast.error('Failed to export PDF');
+      toast.error(t('admin.failedToExportPDF'));
     } finally {
       setExportingOrder(null);
     }
@@ -112,24 +114,24 @@ export default function AdminOrdersPage() {
       });
       
       if (response.ok) {
-        toast.success(`Order #${orderId} status updated to ${newStatus}`);
+        toast.success(t('admin.orderStatusUpdated', { id: orderId, status: newStatus }));
         fetchOrders();
         if (selectedOrder?.id === orderId) {
           setSelectedOrder(null);
         }
       } else {
-        toast.error('Failed to update status');
+        toast.error(t('admin.failedToUpdateStatus'));
       }
     } catch (error) {
       console.error('Update error:', error);
-      toast.error('Failed to update status');
+      toast.error(t('admin.failedToUpdateStatus'));
     } finally {
       setUpdatingStatus(null);
     }
   };
 
   const deleteOrder = async (orderId: number) => {
-    if (!confirm(`Are you sure you want to delete Order #${orderId}? This action cannot be undone.`)) {
+    if (!confirm(t('admin.confirmDeleteOrder', { id: orderId }))) {
       return;
     }
 
@@ -145,17 +147,17 @@ export default function AdminOrdersPage() {
       });
       
       if (response.ok) {
-        toast.success(`Order #${orderId} deleted successfully`);
+        toast.success(t('admin.orderDeleted', { id: orderId }));
         fetchOrders();
         if (selectedOrder?.id === orderId) {
           setSelectedOrder(null);
         }
       } else {
-        toast.error('Failed to delete order');
+        toast.error(t('admin.failedToDeleteOrder'));
       }
     } catch (error) {
       console.error('Delete error:', error);
-      toast.error('Failed to delete order');
+      toast.error(t('admin.failedToDeleteOrder'));
     } finally {
       setDeletingOrder(null);
     }
@@ -200,9 +202,9 @@ export default function AdminOrdersPage() {
     <div className="p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="font-headline-md text-headline-md text-on-surface">Orders</h1>
+          <h1 className="font-headline-md text-headline-md text-on-surface">{t('admin.orders')}</h1>
           <p className="font-body-md text-body-md text-on-surface-variant mt-1">
-            Manage and track customer orders
+            {t('admin.ordersDescription')}
           </p>
         </div>
       </div>
@@ -212,31 +214,31 @@ export default function AdminOrdersPage() {
           onClick={() => setFilterStatus('all')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'all' ? 'bg-primary text-white' : 'bg-surface text-on-surface-variant border border-outline-variant hover:bg-surface-container-low'}`}
         >
-          All Orders ({orders.length})
+          {t('admin.allOrders')} ({orders.length})
         </button>
         <button
           onClick={() => setFilterStatus('pending')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'pending' ? 'bg-yellow-500 text-white' : 'bg-surface text-yellow-700 border border-yellow-300 hover:bg-yellow-50'}`}
         >
-          Pending ({pendingCount})
+          {t('admin.pending')} ({pendingCount})
         </button>
         <button
           onClick={() => setFilterStatus('paid')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'paid' ? 'bg-blue-500 text-white' : 'bg-surface text-blue-700 border border-blue-300 hover:bg-blue-50'}`}
         >
-          Paid ({paidCount})
+          {t('admin.paid')} ({paidCount})
         </button>
         <button
           onClick={() => setFilterStatus('delivered')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'delivered' ? 'bg-green-500 text-white' : 'bg-surface text-green-700 border border-green-300 hover:bg-green-50'}`}
         >
-          Delivered ({deliveredCount})
+          {t('admin.delivered')} ({deliveredCount})
         </button>
         <button
           onClick={() => setFilterStatus('cancelled')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filterStatus === 'cancelled' ? 'bg-red-500 text-white' : 'bg-surface text-red-700 border border-red-300 hover:bg-red-50'}`}
         >
-          Cancelled ({cancelledCount})
+          {t('admin.cancelled')} ({cancelledCount})
         </button>
       </div>
 
@@ -245,13 +247,13 @@ export default function AdminOrdersPage() {
           <table className="w-full">
             <thead className="bg-surface-bright border-b border-outline-variant/50">
               <tr>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Order ID</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Customer</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Date</th>
-                <th className="p-4 text-right text-secondary text-sm font-medium">Amount</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Status</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Update Status</th>
-                <th className="p-4 text-right text-secondary text-sm font-medium">Actions</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.orderId')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.customer')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.date')}</th>
+                <th className="p-4 text-right text-secondary text-sm font-medium">{t('admin.amount')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.status')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.updateStatus')}</th>
+                <th className="p-4 text-right text-secondary text-sm font-medium">{t('admin.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/30">
@@ -259,24 +261,24 @@ export default function AdminOrdersPage() {
                 <tr key={order.id} className="hover:bg-surface-container-low transition-colors group">
                   <td className="p-4">
                     <span className="font-medium text-on-surface">#{order.id}</span>
-                  </td>
+                   </td>
                   <td className="p-4">
                     <div>
                       <p className="font-medium text-on-surface">{order.customer_name}</p>
                       <p className="text-xs text-secondary">{order.customer_email}</p>
                     </div>
-                  </td>
+                   </td>
                   <td className="p-4 text-secondary">
                     {new Date(order.created_at).toLocaleDateString()}
-                  </td>
+                   </td>
                   <td className="p-4 text-right font-medium text-on-surface">
                     {formatDA(parseFloat(order.total))}
-                  </td>
+                   </td>
                   <td className="p-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                      {order.status.toUpperCase()}
+                      {t(`admin.${order.status}`).toUpperCase()}
                     </span>
-                  </td>
+                   </td>
                   <td className="p-4">
                     <select
                       value={order.status}
@@ -286,159 +288,162 @@ export default function AdminOrdersPage() {
                     >
                       {getStatusOptions().map((status) => (
                         <option key={status} value={status}>
-                          {status.toUpperCase()}
+                          {t(`admin.${status}`).toUpperCase()}
                         </option>
                       ))}
                     </select>
                     {updatingStatus === order.id && (
                       <span className="ml-2 inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
                     )}
-                  </td>
+                   </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => fetchOrderDetails(order.id)}
                         className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                       >
-                        View
+                        {t('admin.view')}
                       </button>
                       <button
                         onClick={() => handleExportPDF(order)}
                         disabled={exportingOrder === order.id}
                         className="px-3 py-1 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50"
                       >
-                        {exportingOrder === order.id ? '...' : 'PDF'}
+                        {exportingOrder === order.id ? '...' : t('admin.pdf')}
                       </button>
                       <button
                         onClick={() => deleteOrder(order.id)}
                         disabled={deletingOrder === order.id}
                         className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
                       >
-                        {deletingOrder === order.id ? '...' : 'Delete'}
+                        {deletingOrder === order.id ? '...' : t('admin.delete')}
                       </button>
                     </div>
-                  </td>
-                </tr>
+                   </td>
+                 </tr>
               ))}
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-secondary">
-                    No orders found
-                  </td>
-                </tr>
+                    {t('admin.noOrdersFound')}
+                   </td>
+                 </tr>
               )}
             </tbody>
-          </table>
+           </table>
         </div>
       </div>
 
-      {/* Order Details Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-3xl w-full max-h-[85vh] overflow-y-auto">
-            <div className="p-6 border-b sticky top-0 bg-white">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">Order #{selectedOrder.id}</h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleExportPDF(selectedOrder)}
-                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                  >
-                    Export PDF
-                  </button>
-                  <button
-                    onClick={() => setSelectedOrder(null)}
-                    className="text-gray-500 hover:text-gray-700 text-2xl"
-                  >
-                    ×
-                  </button>
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+    <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+      {/* Fixed Header - with higher z-index and proper positioning */}
+      <div className="p-6 border-b bg-white sticky top-0 z-10">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-bold">{t('admin.order')} #{selectedOrder.id}</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleExportPDF(selectedOrder)}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+            >
+              {t('admin.exportPDF')}
+            </button>
+            <button
+              onClick={() => setSelectedOrder(null)}
+              className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Scrollable Content */}
+      <div className="overflow-y-auto p-6 space-y-6" style={{ maxHeight: 'calc(90vh - 80px)' }}>
+        {loadingDetails ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <>
+            <div>
+              <h3 className="font-semibold text-lg mb-3">{t('admin.customerInformation')}</h3>
+              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                <p><strong>{t('admin.name')}:</strong> {selectedOrder.customer_name}</p>
+                <p><strong>{t('admin.email')}:</strong> {selectedOrder.customer_email}</p>
+                <p><strong>{t('admin.phone')}:</strong> {selectedOrder.customer_phone || 'N/A'}</p>
+                <p><strong>{t('admin.address')}:</strong> {selectedOrder.shipping_address}</p>
+                <p><strong>{t('admin.date')}:</strong> {new Date(selectedOrder.created_at).toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-3">{t('admin.orderSummary')}</h3>
+              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-medium">{t('admin.subtotal')}:</span>
+                  <span>{formatDA(parseFloat(selectedOrder.subtotal || '0'))}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">{t('admin.shippingCost')}:</span>
+                  <span>{formatDA(parseFloat(selectedOrder.shipping_cost || '0'))}</span>
+                </div>
+                <div className="border-t pt-2 mt-2 flex justify-between font-bold">
+                  <span>{t('admin.total')}:</span>
+                  <span>{formatDA(parseFloat(selectedOrder.total))}</span>
                 </div>
               </div>
             </div>
-            
-            {loadingDetails ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-              </div>
-            ) : (
-              <div className="p-6 space-y-6">
-                <div>
-                  <h3 className="font-semibold text-lg mb-3">Customer Information</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                    <p><strong>Name:</strong> {selectedOrder.customer_name}</p>
-                    <p><strong>Email:</strong> {selectedOrder.customer_email}</p>
-                    <p><strong>Phone:</strong> {selectedOrder.customer_phone || 'N/A'}</p>
-                    <p><strong>Address:</strong> {selectedOrder.shipping_address}</p>
-                    <p><strong>Date:</strong> {new Date(selectedOrder.created_at).toLocaleString()}</p>
-                  </div>
-                </div>
 
-                <div>
-                  <h3 className="font-semibold text-lg mb-3">Order Summary</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium">Subtotal:</span>
-                      <span>{formatDA(parseFloat(selectedOrder.subtotal || '0'))}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Shipping Cost:</span>
-                      <span>{formatDA(parseFloat(selectedOrder.shipping_cost || '0'))}</span>
-                    </div>
-                    <div className="border-t pt-2 mt-2 flex justify-between font-bold">
-                      <span>Total:</span>
-                      <span>{formatDA(parseFloat(selectedOrder.total))}</span>
-                    </div>
-                  </div>
+            <div>
+              <h3 className="font-semibold text-lg mb-3">{t('admin.orderItems')}</h3>
+              {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead className="bg-gray-50 sticky top-0">
+                      <tr>
+                        <th className="p-3 text-left text-sm font-medium border">{t('admin.product')}</th>
+                        <th className="p-3 text-left text-sm font-medium border">{t('admin.size')}</th>
+                        <th className="p-3 text-left text-sm font-medium border">{t('admin.color')}</th>
+                        <th className="p-3 text-right text-sm font-medium border">{t('admin.quantity')}</th>
+                        <th className="p-3 text-right text-sm font-medium border">{t('admin.price')}</th>
+                        <th className="p-3 text-right text-sm font-medium border">{t('admin.total')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedOrder.items.map((item, idx) => (
+                        <tr key={idx} className="border-t">
+                          <td className="p-3 border">{item.product_name}</td>
+                          <td className="p-3 border">{item.size || '-'}</td>
+                          <td className="p-3 border">{item.color || '-'}</td>
+                          <td className="p-3 text-right border">{item.quantity}</td>
+                          <td className="p-3 text-right border">{formatDA(parseFloat(item.product_price))}</td>
+                          <td className="p-3 text-right border">
+                            {formatDA(parseFloat(item.product_price) * item.quantity)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-gray-50">
+                      <tr className="border-t">
+                        <td colSpan={5} className="p-3 text-right font-bold">{t('admin.total')}:</td>
+                        <td className="p-3 text-right font-bold">{formatDA(parseFloat(selectedOrder.total))}</td>
+                       </tr>
+                    </tfoot>
+                  </table>
                 </div>
-
-                <div>
-                  <h3 className="font-semibold text-lg mb-3">Order Items</h3>
-                  {selectedOrder.items && selectedOrder.items.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="p-3 text-left text-sm font-medium border">Product</th>
-                            <th className="p-3 text-left text-sm font-medium border">Size</th>
-                            <th className="p-3 text-left text-sm font-medium border">Color</th>
-                            <th className="p-3 text-right text-sm font-medium border">Qty</th>
-                            <th className="p-3 text-right text-sm font-medium border">Price</th>
-                            <th className="p-3 text-right text-sm font-medium border">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {selectedOrder.items.map((item, idx) => (
-                            <tr key={idx} className="border-t">
-                              <td className="p-3 border">{item.product_name}</td>
-                              <td className="p-3 border">{item.size || '-'}</td>
-                              <td className="p-3 border">{item.color || '-'}</td>
-                              <td className="p-3 text-right border">{item.quantity}</td>
-                              <td className="p-3 text-right border">{formatDA(parseFloat(item.product_price))}</td>
-                              <td className="p-3 text-right border">
-                                {formatDA(parseFloat(item.product_price) * item.quantity)}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                        <tfoot className="bg-gray-50">
-                          <tr className="border-t">
-                            <td colSpan={5} className="p-3 text-right font-bold">Total:</td>
-                            <td className="p-3 text-right font-bold">{formatDA(parseFloat(selectedOrder.total))}</td>
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No items found for this order.
-                    </div>
-                  )}
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  {t('admin.noItemsFound')}
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

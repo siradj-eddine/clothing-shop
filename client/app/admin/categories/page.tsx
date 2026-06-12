@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 import { productsApi } from '@/lib/api';
 import { Category } from '@/lib/types';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminCategoriesPage() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,7 +25,7 @@ export default function AdminCategoriesPage() {
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
-      toast.error('Failed to load categories');
+      toast.error(t('admin.failedToLoadCategories'));
       setLoading(false);
     }
   };
@@ -32,7 +34,6 @@ export default function AdminCategoriesPage() {
     fetchCategories();
   }, []);
 
-  // Auto-generate slug from name
   useEffect(() => {
     if (formData.name) {
       const slug = formData.name
@@ -50,17 +51,17 @@ export default function AdminCategoriesPage() {
     try {
       if (editingCategory) {
         await productsApi.updateCategory(editingCategory.slug, formData);
-        toast.success('Category updated successfully!');
+        toast.success(t('admin.categoryUpdated'));
       } else {
         await productsApi.createCategory(formData);
-        toast.success('Category created successfully!');
+        toast.success(t('admin.categoryCreated'));
       }
       setIsModalOpen(false);
       setEditingCategory(null);
       setFormData({ name: '', slug: '' });
       fetchCategories();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to save category');
+      toast.error(error.response?.data?.message || t('admin.failedToSaveCategory'));
     } finally {
       setSubmitting(false);
     }
@@ -76,16 +77,16 @@ export default function AdminCategoriesPage() {
   };
 
   const handleDelete = async (category: Category) => {
-    if (!confirm(`Are you sure you want to delete "${category.name}"? This will remove the category from all products.`)) {
+    if (!confirm(t('admin.confirmDeleteCategory', { name: category.name }))) {
       return;
     }
 
     try {
       await productsApi.deleteCategory(category.slug);
-      toast.success('Category deleted successfully!');
+      toast.success(t('admin.categoryDeleted'));
       fetchCategories();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete category');
+      toast.error(error.response?.data?.message || t('admin.failedToDeleteCategory'));
     }
   };
 
@@ -105,12 +106,11 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="font-headline-md text-headline-md text-on-surface">Categories</h1>
+          <h1 className="font-headline-md text-headline-md text-on-surface">{t('admin.categories')}</h1>
           <p className="font-body-md text-body-md text-on-surface-variant mt-1">
-            Manage product categories for your clothing shop.
+            {t('admin.categoriesDescription')}
           </p>
         </div>
         <button
@@ -118,34 +118,33 @@ export default function AdminCategoriesPage() {
           className="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-all flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
-          Add Category
+          {t('admin.addCategory')}
         </button>
       </div>
 
-      {/* Categories Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 hover:shadow-md transition-all"
+            className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 hover:shadow-md transition-all group"
           >
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-title-lg text-title-lg text-on-surface mb-1">{category.name}</h3>
-                <p className="text-sm text-on-surface-variant">slug: {category.slug}</p>
+                <p className="text-sm text-on-surface-variant">{t('admin.slug')}: {category.slug}</p>
               </div>
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={() => handleEdit(category)}
                   className="p-2 text-secondary hover:text-primary rounded-lg hover:bg-surface-container transition-colors"
-                  title="Edit"
+                  title={t('admin.edit')}
                 >
                   <span className="material-symbols-outlined text-[20px]">edit</span>
                 </button>
                 <button
                   onClick={() => handleDelete(category)}
                   className="p-2 text-secondary hover:text-error rounded-lg hover:bg-error-container transition-colors"
-                  title="Delete"
+                  title={t('admin.delete')}
                 >
                   <span className="material-symbols-outlined text-[20px]">delete</span>
                 </button>
@@ -153,7 +152,7 @@ export default function AdminCategoriesPage() {
             </div>
             <div className="flex items-center gap-2 text-sm text-secondary">
               <span className="material-symbols-outlined text-[16px]">category</span>
-              <span>{category.product_count || 0} products</span>
+              <span>{category.product_count || 0} {t('admin.productsCount')}</span>
             </div>
           </div>
         ))}
@@ -164,38 +163,37 @@ export default function AdminCategoriesPage() {
           <div className="w-20 h-20 bg-surface-variant rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined text-3xl text-on-surface-variant">category</span>
           </div>
-          <p className="text-on-surface-variant">No categories yet. Click "Add Category" to create one.</p>
+          <p className="text-on-surface-variant">{t('admin.noCategoriesYet')}</p>
         </div>
       )}
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-surface-container-lowest rounded-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold mb-4">
-              {editingCategory ? 'Edit Category' : 'Add New Category'}
+              {editingCategory ? t('admin.editCategory') : t('admin.addNewCategory')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Category Name *</label>
+                <label className="block text-sm font-medium mb-1">{t('admin.categoryName')} *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="e.g., T-Shirts, Jeans, Jackets"
+                  placeholder={t('admin.categoryNamePlaceholder')}
                 />
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium mb-1">Slug (URL)</label>
+                <label className="block text-sm font-medium mb-1">{t('admin.slug')}</label>
                 <input
                   type="text"
                   value={formData.slug}
                   readOnly
                   className="w-full px-3 py-2 border rounded-lg bg-gray-50"
                 />
-                <p className="text-xs text-gray-500 mt-1">Auto-generated from name</p>
+                <p className="text-xs text-gray-500 mt-1">{t('admin.slugAutoGenerated')}</p>
               </div>
               <div className="flex justify-end gap-3">
                 <button
@@ -207,14 +205,14 @@ export default function AdminCategoriesPage() {
                   }}
                   className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  Cancel
+                  {t('admin.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50"
                 >
-                  {submitting ? 'Saving...' : (editingCategory ? 'Save Changes' : 'Create Category')}
+                  {submitting ? t('admin.saving') : (editingCategory ? t('admin.saveChanges') : t('admin.createCategory'))}
                 </button>
               </div>
             </form>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { productsApi } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface ProductImage {
   id: number;
@@ -16,6 +17,7 @@ interface ProductImage {
 }
 
 export default function AddProductPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -28,7 +30,7 @@ export default function AddProductPage() {
     price: '',
     category: '',
     stock: '',
-    sizes: [] as string[],  // Changed from single size to array
+    sizes: [] as string[],
     colors: [] as string[],
     is_active: true,
   });
@@ -38,13 +40,11 @@ export default function AddProductPage() {
   const [createdProductId, setCreatedProductId] = useState<number | null>(null);
 
   useEffect(() => {
-    // Fetch categories
     productsApi.getCategories()
       .then(setCategories)
       .catch(console.error);
   }, []);
 
-  // Auto-generate slug from name
   useEffect(() => {
     if (formData.name) {
       const slug = formData.name
@@ -86,9 +86,9 @@ export default function AddProductPage() {
       try {
         const uploadedImage = await productsApi.uploadImage(createdProductId, file, isMain, images.length + i);
         setImages(prev => [...prev, uploadedImage]);
-        toast.success(`Uploaded ${file.name}`);
+        toast.success(`${t('admin.uploaded')} ${file.name}`);
       } catch (error) {
-        toast.error(`Failed to upload ${file.name}`);
+        toast.error(`${t('admin.failedToUpload')} ${file.name}`);
       }
     }
     
@@ -103,21 +103,21 @@ export default function AddProductPage() {
         ...img,
         is_main: img.id === imageId
       })));
-      toast.success('Main image updated');
+      toast.success(t('admin.mainImageUpdated'));
     } catch (error) {
-      toast.error('Failed to set main image');
+      toast.error(t('admin.failedToSetMainImage'));
     }
   };
 
   const handleDeleteImage = async (imageId: number) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+    if (!confirm(t('admin.confirmDeleteImage'))) return;
     
     try {
       await productsApi.deleteImage(imageId);
       setImages(prev => prev.filter(img => img.id !== imageId));
-      toast.success('Image deleted');
+      toast.success(t('admin.imageDeleted'));
     } catch (error) {
-      toast.error('Failed to delete image');
+      toast.error(t('admin.failedToDeleteImage'));
     }
   };
 
@@ -133,46 +133,43 @@ export default function AddProductPage() {
         price: parseFloat(formData.price),
         category: formData.category ? parseInt(formData.category) : null,
         stock: parseInt(formData.stock),
-        sizes: formData.sizes,  // Send array of sizes
+        sizes: formData.sizes,
         colors: formData.colors,
         is_active: formData.is_active,
       });
       
       setCreatedProductId(newProduct.id);
-      toast.success('Product created! You can now upload images.');
+      toast.success(t('admin.productCreated'));
       
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to create product');
+      toast.error(error.response?.data?.message || t('admin.failedToCreateProduct'));
       setLoading(false);
     }
   };
 
   const handleFinish = () => {
-    toast.success('Product created successfully!');
+    toast.success(t('admin.productCreatedSuccessfully'));
     router.push('/admin/products');
   };
 
-  // If product is created, show image upload section
   if (createdProductId) {
     return (
       <div className="p-8 max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/admin/products" className="text-primary hover:underline">
-            ← Back to Products
+            ← {t('admin.backToProducts')}
           </Link>
-          <h1 className="text-2xl font-bold">Add Product Images</h1>
+          <h1 className="text-2xl font-bold">{t('admin.addProductImages')}</h1>
         </div>
 
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
           <p className="text-green-700">
-            ✅ Product "{formData.name}" has been created successfully!
-            Now upload images for this product.
+            ✅ {t('admin.productCreatedSuccessMessage', { name: formData.name })}
           </p>
         </div>
 
-        {/* Image Upload Section */}
         <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Product Images</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.productImages')}</h2>
           
           <div className="mb-4">
             <input
@@ -184,7 +181,7 @@ export default function AddProductPage() {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Upload multiple images (JPG, PNG, WEBP). First image becomes main.
+              {t('admin.uploadImagesHint')}
             </p>
           </div>
 
@@ -203,7 +200,7 @@ export default function AddProductPage() {
                   
                   {image.is_main && (
                     <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                      Main
+                      {t('admin.main')}
                     </div>
                   )}
                   
@@ -212,7 +209,7 @@ export default function AddProductPage() {
                       <button
                         onClick={() => handleSetMainImage(image.id)}
                         className="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors"
-                        title="Set as main image"
+                        title={t('admin.setAsMainImage')}
                       >
                         <span className="material-symbols-outlined text-[18px]">star</span>
                       </button>
@@ -220,7 +217,7 @@ export default function AddProductPage() {
                     <button
                       onClick={() => handleDeleteImage(image.id)}
                       className="p-2 bg-white rounded-lg hover:bg-red-100 transition-colors text-red-500"
-                      title="Delete image"
+                      title={t('admin.deleteImage')}
                     >
                       <span className="material-symbols-outlined text-[18px]">delete</span>
                     </button>
@@ -233,7 +230,7 @@ export default function AddProductPage() {
           {uploadingImages && (
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-              <p className="text-sm text-gray-500 mt-2">Uploading...</p>
+              <p className="text-sm text-gray-500 mt-2">{t('admin.uploading')}</p>
             </div>
           )}
 
@@ -242,42 +239,39 @@ export default function AddProductPage() {
               onClick={handleFinish}
               className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
             >
-              Done - Go to Products
+              {t('admin.doneGoToProducts')}
             </button>
           </div>
         </div>
 
-        {/* Product Info Summary */}
         <div className="bg-gray-50 rounded-lg border p-6">
-          <h3 className="font-semibold mb-2">Product Information</h3>
-          <p><strong>Name:</strong> {formData.name}</p>
-          <p><strong>Price:</strong> {formData.price} DZD</p>
-          <p><strong>Stock:</strong> {formData.stock}</p>
-          <p><strong>Sizes:</strong> {formData.sizes.join(', ') || 'None'}</p>
-          <p><strong>Colors:</strong> {formData.colors.join(', ') || 'None'}</p>
+          <h3 className="font-semibold mb-2">{t('admin.productInformation')}</h3>
+          <p><strong>{t('admin.name')}:</strong> {formData.name}</p>
+          <p><strong>{t('admin.price')}:</strong> {formData.price} DZD</p>
+          <p><strong>{t('admin.stock')}:</strong> {formData.stock}</p>
+          <p><strong>{t('admin.sizes')}:</strong> {formData.sizes.join(', ') || t('admin.none')}</p>
+          <p><strong>{t('admin.colors')}:</strong> {formData.colors.join(', ') || t('admin.none')}</p>
         </div>
       </div>
     );
   }
 
-  // Product creation form
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/admin/products" className="text-primary hover:underline">
-          ← Back to Products
+          ← {t('admin.backToProducts')}
         </Link>
-        <h1 className="text-2xl font-bold">Add New Product</h1>
+        <h1 className="text-2xl font-bold">{t('admin.addNewProduct')}</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Information */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.basicInformation')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Product Name *</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.productName')} *</label>
               <input
                 type="text"
                 required
@@ -288,19 +282,19 @@ export default function AddProductPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Slug (URL)</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.slug')}</label>
               <input
                 type="text"
                 value={formData.slug}
                 readOnly
                 className="w-full px-3 py-2 border rounded-lg bg-gray-50"
               />
-              <p className="text-xs text-gray-500 mt-1">Auto-generated from name</p>
+              <p className="text-xs text-gray-500 mt-1">{t('admin.slugAutoGenerated')}</p>
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1">{t('admin.description')}</label>
             <textarea
               rows={4}
               value={formData.description}
@@ -310,13 +304,12 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {/* Pricing & Inventory */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Pricing & Inventory</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.pricingAndInventory')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Price (DZD) *</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.priceDZD')} *</label>
               <input
                 type="number"
                 step="0.01"
@@ -328,7 +321,7 @@ export default function AddProductPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Stock *</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.stock')} *</label>
               <input
                 type="number"
                 required
@@ -339,13 +332,13 @@ export default function AddProductPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.category')}</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option value="">Select Category</option>
+                <option value="">{t('admin.selectCategory')}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -354,9 +347,8 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {/* Sizes - Multiple Selection */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Sizes (Select multiple)</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.sizesMultiple')}</h2>
           
           <div className="mb-4">
             <div className="flex flex-wrap gap-2">
@@ -377,15 +369,14 @@ export default function AddProductPage() {
             </div>
             {formData.sizes.length > 0 && (
               <p className="text-xs text-gray-500 mt-2">
-                Selected: {formData.sizes.join(', ')}
+                {t('admin.selected')}: {formData.sizes.join(', ')}
               </p>
             )}
           </div>
         </div>
 
-        {/* Colors */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Colors (Select multiple)</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.colorsMultiple')}</h2>
           
           <div>
             <div className="flex flex-wrap gap-2">
@@ -406,13 +397,12 @@ export default function AddProductPage() {
             </div>
             {formData.colors.length > 0 && (
               <p className="text-xs text-gray-500 mt-2">
-                Selected: {formData.colors.join(', ')}
+                {t('admin.selected')}: {formData.colors.join(', ')}
               </p>
             )}
           </div>
         </div>
 
-        {/* Status */}
         <div className="bg-white rounded-lg border p-6">
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -421,24 +411,23 @@ export default function AddProductPage() {
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               className="w-4 h-4 text-primary rounded"
             />
-            <span className="text-sm font-medium">Active (visible to customers)</span>
+            <span className="text-sm font-medium">{t('admin.activeVisible')}</span>
           </label>
         </div>
 
-        {/* Submit */}
         <div className="flex justify-end gap-3">
           <Link
             href="/admin/products"
             className="px-6 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
           >
-            Cancel
+            {t('admin.cancel')}
           </Link>
           <button
             type="submit"
             disabled={loading}
             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50"
           >
-            {loading ? 'Creating...' : 'Create Product'}
+            {loading ? t('admin.creating') : t('admin.createProduct')}
           </button>
         </div>
       </form>

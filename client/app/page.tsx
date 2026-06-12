@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { productsApi } from '@/lib/api';
 import { Product } from '@/lib/types';
 import { useCart } from '@/context/CartContext';
@@ -15,7 +14,7 @@ export default function Home() {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    productsApi.getAll({ page_size: 12 })
+    productsApi.getAll({ page_size: 8 })
       .then((response) => {
         setFeaturedProducts(response.results);
         setLoading(false);
@@ -64,17 +63,19 @@ export default function Home() {
           </Link>
         </div>
         
-        {/* Responsive Grid - Mobile: 2, Tablet: 3, Desktop: 4 */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
-          {featuredProducts.map((product) => (
-            <div key={product.id} className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          {featuredProducts.map((product, index) => (
+            <div 
+              key={product.id} 
+              className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fadeIn"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
               <Link href={`/product/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden bg-gray-100">
                 {product.main_image_url ? (
-                  <Image
+                  <img
                     src={product.main_image_url}
                     alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -82,7 +83,7 @@ export default function Home() {
                   </div>
                 )}
                 {product.stock < 10 && product.stock > 0 && (
-                  <div className="absolute top-3 left-3 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+                  <div className="absolute top-3 left-3 bg-orange-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
                     {t('products.lowStock')}
                   </div>
                 )}
@@ -104,10 +105,10 @@ export default function Home() {
                   <button
                     onClick={() => addToCart(product.id, 1)}
                     disabled={product.stock === 0}
-                    className={`p-2 rounded-full transition-all ${
+                    className={`p-2 rounded-full transition-all duration-300 ${
                       product.stock === 0
                         ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-105'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-110 active:scale-95'
                     }`}
                   >
                     <span className="material-symbols-outlined text-[20px]">shopping_cart</span>

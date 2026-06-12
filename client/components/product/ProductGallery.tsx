@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 
 interface ProductImage {
   id: number;
@@ -18,12 +17,11 @@ export default function ProductGallery({ images, productName }: { images: Produc
     <>
       <div className="bg-white rounded-2xl overflow-hidden shadow-md h-[350px] sm:h-[450px] lg:h-[500px] relative mb-3">
         {selectedImage ? (
-          <Image
+          // Use img tag instead of Next.js Image to avoid domain issues
+          <img
             src={selectedImage}
             alt={productName}
-            fill
-            className="object-contain p-4"
-            priority
+            className="w-full h-full object-contain p-4"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -45,11 +43,10 @@ export default function ProductGallery({ images, productName }: { images: Produc
               }`}
             >
               <div className="relative w-full h-full">
-                <Image
+                <img
                   src={img.image_url}
                   alt={`${productName} - image ${idx + 1}`}
-                  fill
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </button>

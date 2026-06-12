@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { productsApi } from '@/lib/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface ProductImage {
   id: number;
@@ -16,6 +17,7 @@ interface ProductImage {
 }
 
 export default function EditProductPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { slug } = useParams();
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,6 @@ export default function EditProductPage() {
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const colorOptions = ['Black', 'White', 'Blue', 'Red', 'Green', 'Yellow', 'Gray', 'Navy'];
 
-  // Fetch product data
   const fetchProductData = async () => {
     try {
       const product = await productsApi.getBySlug(slug as string);
@@ -58,7 +59,7 @@ export default function EditProductPage() {
       setImages(product.images || []);
     } catch (error) {
       console.error('Failed to load product:', error);
-      toast.error('Product not found');
+      toast.error(t('admin.productNotFound'));
       router.push('/admin/products');
     }
   };
@@ -96,7 +97,7 @@ export default function EditProductPage() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0 || !productId) {
-      toast.error('Product ID not found. Please refresh the page.');
+      toast.error(t('admin.productIdMissing'));
       return;
     }
 
@@ -109,10 +110,10 @@ export default function EditProductPage() {
       try {
         const uploadedImage = await productsApi.uploadImage(productId, file, isMain, images.length + i);
         setImages(prev => [...prev, uploadedImage]);
-        toast.success(`Uploaded ${file.name}`);
+        toast.success(`${t('admin.uploaded')} ${file.name}`);
       } catch (error: any) {
         console.error('Upload error:', error);
-        toast.error(error.response?.data?.message || `Failed to upload ${file.name}`);
+        toast.error(error.response?.data?.message || `${t('admin.failedToUpload')} ${file.name}`);
       }
     }
     
@@ -127,21 +128,21 @@ export default function EditProductPage() {
         ...img,
         is_main: img.id === imageId
       })));
-      toast.success('Main image updated');
+      toast.success(t('admin.mainImageUpdated'));
     } catch (error) {
-      toast.error('Failed to set main image');
+      toast.error(t('admin.failedToSetMainImage'));
     }
   };
 
   const handleDeleteImage = async (imageId: number) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+    if (!confirm(t('admin.confirmDeleteImage'))) return;
     
     try {
       await productsApi.deleteImage(imageId);
       setImages(prev => prev.filter(img => img.id !== imageId));
-      toast.success('Image deleted');
+      toast.success(t('admin.imageDeleted'));
     } catch (error) {
-      toast.error('Failed to delete image');
+      toast.error(t('admin.failedToDeleteImage'));
     }
   };
 
@@ -161,10 +162,10 @@ export default function EditProductPage() {
         is_active: formData.is_active,
       });
       
-      toast.success('Product updated successfully!');
+      toast.success(t('admin.productUpdated'));
       fetchProductData();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to update product');
+      toast.error(error.response?.data?.message || t('admin.failedToUpdateProduct'));
     } finally {
       setSubmitting(false);
     }
@@ -182,19 +183,18 @@ export default function EditProductPage() {
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/admin/products" className="text-primary hover:underline">
-          ← Back to Products
+          ← {t('admin.backToProducts')}
         </Link>
-        <h1 className="text-2xl font-bold">Edit Product</h1>
+        <h1 className="text-2xl font-bold">{t('admin.editProduct')}</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Information */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.basicInformation')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Product Name *</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.productName')} *</label>
               <input
                 type="text"
                 required
@@ -205,19 +205,19 @@ export default function EditProductPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Slug (URL)</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.slug')}</label>
               <input
                 type="text"
                 value={formData.slug}
                 disabled
                 className="w-full px-3 py-2 border rounded-lg bg-gray-50"
               />
-              <p className="text-xs text-gray-500 mt-1">Slug cannot be changed</p>
+              <p className="text-xs text-gray-500 mt-1">{t('admin.slugCannotChange')}</p>
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1">{t('admin.description')}</label>
             <textarea
               rows={4}
               value={formData.description}
@@ -227,13 +227,12 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* Pricing & Inventory */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Pricing & Inventory</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.pricingAndInventory')}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Price (DZD) *</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.priceDZD')} *</label>
               <input
                 type="number"
                 step="0.01"
@@ -245,7 +244,7 @@ export default function EditProductPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Stock *</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.stock')} *</label>
               <input
                 type="number"
                 required
@@ -256,13 +255,13 @@ export default function EditProductPage() {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
+              <label className="block text-sm font-medium mb-1">{t('admin.category')}</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                <option value="">Select Category</option>
+                <option value="">{t('admin.selectCategory')}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -271,9 +270,8 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* Product Images */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Product Images</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.productImages')}</h2>
           
           <div className="mb-4">
             <input
@@ -285,11 +283,11 @@ export default function EditProductPage() {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Upload multiple images (JPG, PNG, WEBP). First image becomes main.
+              {t('admin.uploadImagesHint')}
             </p>
             {productId && (
               <p className="text-xs text-green-600 mt-1">
-                Product ID: {productId} - Ready for upload
+                {t('admin.productIdReady', { id: productId })}
               </p>
             )}
           </div>
@@ -309,7 +307,7 @@ export default function EditProductPage() {
                   
                   {image.is_main && (
                     <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                      Main
+                      {t('admin.main')}
                     </div>
                   )}
                   
@@ -319,7 +317,7 @@ export default function EditProductPage() {
                         type="button"
                         onClick={() => handleSetMainImage(image.id)}
                         className="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors"
-                        title="Set as main image"
+                        title={t('admin.setAsMainImage')}
                       >
                         <span className="material-symbols-outlined text-[18px]">star</span>
                       </button>
@@ -328,7 +326,7 @@ export default function EditProductPage() {
                       type="button"
                       onClick={() => handleDeleteImage(image.id)}
                       className="p-2 bg-white rounded-lg hover:bg-red-100 transition-colors text-red-500"
-                      title="Delete image"
+                      title={t('admin.deleteImage')}
                     >
                       <span className="material-symbols-outlined text-[18px]">delete</span>
                     </button>
@@ -341,21 +339,20 @@ export default function EditProductPage() {
           {uploadingImages && (
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-              <p className="text-sm text-gray-500 mt-2">Uploading...</p>
+              <p className="text-sm text-gray-500 mt-2">{t('admin.uploading')}</p>
             </div>
           )}
 
           {images.length === 0 && !uploadingImages && (
             <div className="text-center py-8 text-gray-500">
               <span className="material-symbols-outlined text-4xl">cloud_upload</span>
-              <p className="mt-2">No images yet. Upload some above.</p>
+              <p className="mt-2">{t('admin.noImagesYet')}</p>
             </div>
           )}
         </div>
 
-        {/* Sizes - Multiple Selection */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Sizes (Select multiple)</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.sizesMultiple')}</h2>
           
           <div className="mb-4">
             <div className="flex flex-wrap gap-2">
@@ -376,15 +373,14 @@ export default function EditProductPage() {
             </div>
             {formData.sizes.length > 0 && (
               <p className="text-xs text-gray-500 mt-2">
-                Selected: {formData.sizes.join(', ')}
+                {t('admin.selected')}: {formData.sizes.join(', ')}
               </p>
             )}
           </div>
         </div>
 
-        {/* Colors */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-lg font-semibold mb-4">Colors (Select multiple)</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('admin.colorsMultiple')}</h2>
           
           <div>
             <div className="flex flex-wrap gap-2">
@@ -405,13 +401,12 @@ export default function EditProductPage() {
             </div>
             {formData.colors.length > 0 && (
               <p className="text-xs text-gray-500 mt-2">
-                Selected: {formData.colors.join(', ')}
+                {t('admin.selected')}: {formData.colors.join(', ')}
               </p>
             )}
           </div>
         </div>
 
-        {/* Status */}
         <div className="bg-white rounded-lg border p-6">
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -420,24 +415,23 @@ export default function EditProductPage() {
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
               className="w-4 h-4 text-primary rounded"
             />
-            <span className="text-sm font-medium">Active (visible to customers)</span>
+            <span className="text-sm font-medium">{t('admin.activeVisible')}</span>
           </label>
         </div>
 
-        {/* Submit */}
         <div className="flex justify-end gap-3">
           <Link
             href="/admin/products"
             className="px-6 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
           >
-            Cancel
+            {t('admin.cancel')}
           </Link>
           <button
             type="submit"
             disabled={submitting}
             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50"
           >
-            {submitting ? 'Saving...' : 'Save Changes'}
+            {submitting ? t('admin.saving') : t('admin.saveChanges')}
           </button>
         </div>
       </form>

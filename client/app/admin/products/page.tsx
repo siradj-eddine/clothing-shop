@@ -1,44 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { productsApi } from '@/lib/api';
 import { Product } from '@/lib/types';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminProductsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const fetchProducts = () => {
+  const fetchProducts = useCallback(() => {
+    setLoading(true);
     productsApi.getAll({ page_size: 50 })
       .then((response) => {
         setProducts(response.results);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   const handleDelete = async (product: Product) => {
-    if (!confirm(`Are you sure you want to delete "${product.name}"?`)) {
+    if (!confirm(t('admin.confirmDeleteProduct', { name: product.name }))) {
       return;
     }
 
     setDeletingId(product.id);
     try {
       await productsApi.delete(product.slug);
-      toast.success('Product deleted successfully!');
-      fetchProducts(); // Refresh the list
+      toast.success(t('admin.productDeleted'));
+      fetchProducts();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete product');
+      toast.error(error.response?.data?.message || t('admin.failedToDeleteProduct'));
     } finally {
       setDeletingId(null);
     }
@@ -54,12 +57,11 @@ export default function AdminProductsPage() {
 
   return (
     <div className="p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="font-headline-md text-headline-md text-on-surface">Products</h1>
+          <h1 className="font-headline-md text-headline-md text-on-surface">{t('admin.products')}</h1>
           <p className="font-body-md text-body-md text-on-surface-variant mt-1">
-            Manage your catalog, inventory, and pricing.
+            {t('admin.productsDescription')}
           </p>
         </div>
         <Link
@@ -67,23 +69,22 @@ export default function AdminProductsPage() {
           className="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-all flex items-center gap-2"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
-          Add Product
+          {t('admin.addProduct')}
         </Link>
       </div>
 
-      {/* Products Table */}
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-surface-bright border-b border-outline-variant/50">
               <tr>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Image</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Name</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Category</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Stock</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Price</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">Status</th>
-                <th className="p-4 text-right text-secondary text-sm font-medium">Actions</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.image')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.name')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.category')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.stock')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.price')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.status')}</th>
+                <th className="p-4 text-right text-secondary text-sm font-medium">{t('admin.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/30">
@@ -114,12 +115,12 @@ export default function AdminProductsPage() {
                       {product.stock}
                     </span>
                   </td>
-                  <td className="p-4 font-medium text-on-surface">{product.price}DZD</td>
+                  <td className="p-4 font-medium text-on-surface">{product.price} DZD</td>
                   <td className="p-4">
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       product.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {product.is_active ? 'Active' : 'Inactive'}
+                      {product.is_active ? t('admin.active') : t('admin.inactive')}
                     </span>
                   </td>
                   <td className="p-4 text-right">
@@ -146,7 +147,7 @@ export default function AdminProductsPage() {
               {products.length === 0 && (
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-secondary">
-                    No products found. Click Add Product to create one.
+                    {t('admin.noProductsFound')}
                   </td>
                 </tr>
               )}
