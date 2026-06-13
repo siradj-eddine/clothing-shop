@@ -7,24 +7,18 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ordersApi } from '@/lib/api';
 
-interface OrderItem {
-  id: number;
-  product_name: string;
-  product_price: string;
-  quantity: number;
-  size: string;
-  color: string;
-}
+// Use the OrderItem type from your types file instead of redeclaring
+import { OrderItem } from '@/lib/types';
 
-interface OrderWithItems extends Omit<Order, 'items'> {
-  items?: OrderItem[];
+// Extend the Order type to include optional fields for the modal
+type OrderWithItems = Order & {
   subtotal?: string;
   shipping_cost?: string;
-}
+};
 
 export default function AdminOrdersPage() {
   const { t } = useTranslation();
-  const [orders, setOrders] = useState<OrderWithItems[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -63,10 +57,10 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const handleExportPDF = async (order: OrderWithItems) => {
+  const handleExportPDF = async (order: Order) => {
     setExportingOrder(order.id);
     try {
-      let orderWithItems = order;
+      let orderWithItems = order as OrderWithItems;
       if (!order.items || order.items.length === 0) {
         orderWithItems = await ordersApi.getById(order.id);
       }
