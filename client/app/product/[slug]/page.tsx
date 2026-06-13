@@ -26,8 +26,12 @@ interface Product {
   category_name: string;
 }
 
-// FIXED: Use environment variable for API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
+// ONLY use environment variable - NO hardcoded fallback
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  console.error('NEXT_PUBLIC_API_URL is not set!');
+}
 
 async function getProduct(slug: string): Promise<Product | null> {
   try {
