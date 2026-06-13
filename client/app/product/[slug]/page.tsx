@@ -26,9 +26,12 @@ interface Product {
   category_name: string;
 }
 
+// FIXED: Use environment variable for API URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
+
 async function getProduct(slug: string): Promise<Product | null> {
   try {
-    const res = await fetch(`http://server:8000/api/products/${slug}/`, {
+    const res = await fetch(`${API_URL}/api/products/${slug}/`, {
       cache: "no-store",
     });
     if (!res.ok) return null;
