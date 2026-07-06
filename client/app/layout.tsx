@@ -1,5 +1,6 @@
-
 import { Inter } from 'next/font/google';
+import './globals.css';
+import RTLProvider from '@/components/RTLProvider';
 import { Toaster } from 'react-hot-toast';
 import { CartProvider } from '@/context/CartContext';
 import QueryProvider from '@/providers/QueryProvider';
@@ -8,11 +9,8 @@ import Footer from '@/components/common/Footer';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/app/i18n';
 
-import './globals.css';
-
 const inter = Inter({ subsets: ['latin'] });
 
-// ✅ Add metadata for favicon
 export const metadata = {
   title: 'Brothers Shop - Premium Clothing',
   description: 'Premium men\'s clothing shop in Algeria',
@@ -26,8 +24,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Set RTL direction for Arabic
-
   return (
     <html lang="en" dir="ltr">
       <head>
@@ -37,16 +33,18 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <I18nextProvider i18n={i18n}>
-          <QueryProvider>
-            <CartProvider>
-              <Header />
-              <main className="min-h-screen pt-20">{children}</main>
-              <Footer />
-              <Toaster position="top-right" />
-            </CartProvider>
-          </QueryProvider>
-        </I18nextProvider>
+        <RTLProvider>
+          <I18nextProvider i18n={i18n}>
+            <QueryProvider>
+              <CartProvider>
+                <Header />
+                <main className="min-h-screen pt-20">{children}</main>
+                <Footer />
+                <Toaster position="top-right" />
+              </CartProvider>
+            </QueryProvider>
+          </I18nextProvider>
+        </RTLProvider>
       </body>
     </html>
   );
