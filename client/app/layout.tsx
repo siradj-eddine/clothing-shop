@@ -1,3 +1,4 @@
+
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { CartProvider } from '@/context/CartContext';
@@ -6,7 +7,7 @@ import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/app/i18n';
-import { useEffect } from 'react';
+
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -26,11 +27,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   // Set RTL direction for Arabic
-  useEffect(() => {
-    const savedLang = localStorage.getItem('language') || 'en';
-    document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = savedLang;
-  }, []);
 
   return (
     <html lang="en" dir="ltr">
