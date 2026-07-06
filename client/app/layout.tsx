@@ -1,5 +1,3 @@
-'use client';
-
 import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import { CartProvider } from '@/context/CartContext';
@@ -12,6 +10,15 @@ import { useEffect } from 'react';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
+
+// ✅ Add metadata for favicon
+export const metadata = {
+  title: 'Brothers Shop - Premium Clothing',
+  description: 'Premium men\'s clothing shop in Algeria',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
 
 export default function RootLayout({
   children,
