@@ -11,7 +11,6 @@ def send_order_confirmation_email(order, order_items):
     print(f"Order Items: {len(order_items)}")
     
     try:
-        print(f"Using EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}")
         print(f"Using DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
         
         html_content = get_order_confirmation_email(order, order_items)

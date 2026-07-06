@@ -122,10 +122,13 @@ class OrderCreateView(generics.CreateAPIView):
         
         print(f"Stock deducted successfully")
         
-        # Send order confirmation email - WRAPPED IN TRY-EXCEPT
+        # Send order confirmation email - NON-BLOCKING (wrapped in try-except)
         try:
-            send_order_confirmation_email(order, order_items)
-            print("✅ Email sent successfully")
+            email_sent = send_order_confirmation_email(order, order_items)
+            if email_sent:
+                print("✅ Email sent successfully")
+            else:
+                print("⚠️ Email sending returned False")
         except Exception as e:
             print(f"⚠️ Email failed (non-critical): {e}")
             # Order is already created, email failure shouldn't stop the order
