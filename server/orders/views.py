@@ -112,9 +112,7 @@ class OrderCreateView(generics.CreateAPIView):
         
         print(f"Created {len(order_items)} order items")
         
-        # ==========================================================
-        # STOCK DEDUCTION - ADD THIS SECTION
-        # ==========================================================
+        # Stock deduction
         stock_confirmed = StockService.confirm_stock_deduction(order, items_data)
         
         if not stock_confirmed:
@@ -123,10 +121,14 @@ class OrderCreateView(generics.CreateAPIView):
             return Response({'error': 'Stock unavailable. Order cancelled.'}, status=status.HTTP_400_BAD_REQUEST)
         
         print(f"Stock deducted successfully")
-        # ==========================================================
         
-        # Send order confirmation email
-        send_order_confirmation_email(order, order_items)
+        # Send order confirmation email - WRAPPED IN TRY-EXCEPT
+        try:
+            send_order_confirmation_email(order, order_items)
+            print("✅ Email sent successfully")
+        except Exception as e:
+            print(f"⚠️ Email failed (non-critical): {e}")
+            # Order is already created, email failure shouldn't stop the order
         
         # Clear cart
         session_key = request.session.session_key
