@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '@/lib/axios';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -20,11 +20,7 @@ export default function ContactPage() {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:8000/api/contact/', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      const response = await axiosInstance.post('/contact/', formData);
       
       toast.success(response.data.message || t('contact.success'));
       setFormData({ name: '', email: '', subject: '', message: '' });
