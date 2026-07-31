@@ -1,13 +1,13 @@
 import { Inter } from 'next/font/google';
-import './globals.css';
-import RTLProvider from '@/components/RTLProvider';
+
 import { Toaster } from 'react-hot-toast';
 import { CartProvider } from '@/context/CartContext';
 import QueryProvider from '@/providers/QueryProvider';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '@/app/i18n';
+import I18nProvider from '@/providers/I18nProvider';
+import RTLProvider from '@/components/RTLProvider';
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -34,7 +34,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <RTLProvider>
-          <I18nextProvider i18n={i18n}>
+          <I18nProvider>
             <QueryProvider>
               <CartProvider>
                 <Header />
@@ -43,7 +43,7 @@ export default function RootLayout({
                 <Toaster position="top-right" />
               </CartProvider>
             </QueryProvider>
-          </I18nextProvider>
+          </I18nProvider>
         </RTLProvider>
       </body>
     </html>

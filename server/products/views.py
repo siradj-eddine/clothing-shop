@@ -87,7 +87,7 @@ class CategoryListView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
     
-    @method_decorator(cache_page(60 * 30))  # Cache for 30 minutes
+    @method_decorator(cache_page(60 * 3))  # Cache for 3 minutes
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 

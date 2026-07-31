@@ -74,6 +74,15 @@ export default function Header() {
     }
   };
 
+  const toggleShopDropdown = () => {
+    if (!isShopDropdownOpen) {
+      productsApi.getCategories()
+        .then(setCategories)
+        .catch(console.error);
+    }
+    setIsShopDropdownOpen(!isShopDropdownOpen);
+  };
+
   return (
     <>
       <header className="fixed top-0 w-full z-[100] bg-white shadow-md border-b border-gray-100">
@@ -114,7 +123,7 @@ export default function Header() {
             {/* Shop All with Click Dropdown */}
             <div className="relative" ref={shopDropdownRef}>
               <button 
-                onClick={() => setIsShopDropdownOpen(!isShopDropdownOpen)}
+                onClick={toggleShopDropdown}
                 className="flex items-center gap-1 text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium"
               >
                 {t('nav.shopAll')}
@@ -252,7 +261,7 @@ export default function Header() {
             {/* Navigation Links */}
             <nav className="flex flex-col space-y-1">
               <button
-                onClick={() => setIsShopDropdownOpen(!isShopDropdownOpen)}
+                onClick={toggleShopDropdown}
                 className="flex items-center justify-between px-4 py-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all w-full"
               >
                 {t('nav.shopAll')}
