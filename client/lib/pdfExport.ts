@@ -4,8 +4,8 @@ let html2pdf: any = null;
 // Dynamically import html2pdf only on client side
 const loadHtml2Pdf = async () => {
   if (typeof window !== 'undefined' && !html2pdf) {
-    const module = await import('html2pdf.js');
-    html2pdf = module.default;
+    const pdfModule = await import('html2pdf.js');
+    html2pdf = pdfModule.default;
   }
   return html2pdf;
 };
