@@ -5,14 +5,14 @@ import { useCart } from '@/context/CartContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
-export default function ProductActions({ 
-  productId, 
-  productName, 
-  stock, 
-  sizes, 
-  colors 
-}: { 
-  productId: number; 
+export default function ProductActions({
+  productId,
+  productName,
+  stock,
+  sizes,
+  colors,
+}: {
+  productId: number;
   productName: string;
   stock: number;
   sizes: string[];
@@ -39,7 +39,9 @@ export default function ProductActions({
         <div className="flex justify-between items-center mb-3">
           <span className="font-semibold text-gray-900">{t('productDetail.selectSize')}</span>
           <span className="text-xs text-gray-400">
-            {selectedSize ? `${t('productDetail.selected')}: ${selectedSize}` : t('productDetail.required')}
+            {selectedSize
+              ? `${t('productDetail.selected')}: ${selectedSize}`
+              : t('productDetail.required')}
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -63,7 +65,9 @@ export default function ProductActions({
       <div className="mb-6">
         <div className="flex justify-between items-center mb-3">
           <span className="font-semibold text-gray-900">{t('productDetail.selectColor')}</span>
-          <span className="text-xs text-gray-400">{selectedColor || t('productDetail.optional')}</span>
+          <span className="text-xs text-gray-400">
+            {selectedColor || t('productDetail.optional')}
+          </span>
         </div>
         <div className="flex flex-wrap gap-3">
           {colors.map((color) => (
@@ -91,9 +95,7 @@ export default function ProductActions({
           >
             <span className="material-symbols-outlined text-[20px]">remove</span>
           </button>
-          <span className="flex-1 text-center font-medium text-gray-900">
-            {quantity}
-          </span>
+          <span className="flex-1 text-center font-medium text-gray-900">{quantity}</span>
           <button
             onClick={() => setQuantity(quantity + 1)}
             className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-blue-600"
@@ -130,7 +132,9 @@ export default function ProductActions({
       )}
       {stock >= 10 && (
         <div className="mb-4 p-3 bg-green-50 rounded-lg">
-          <p className="text-green-600 text-sm text-center">✓ {t('productDetail.inStock')} ({stock} {t('productDetail.units')})</p>
+          <p className="text-green-600 text-sm text-center">
+            ✓ {t('productDetail.inStock')} ({stock} {t('productDetail.units')})
+          </p>
         </div>
       )}
     </>

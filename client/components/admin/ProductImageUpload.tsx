@@ -19,7 +19,11 @@ interface ProductImageUploadProps {
   onImageChange: () => void;
 }
 
-export default function ProductImageUpload({ productId, images, onImageChange }: ProductImageUploadProps) {
+export default function ProductImageUpload({
+  productId,
+  images,
+  onImageChange,
+}: ProductImageUploadProps) {
   const [uploading, setUploading] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,11 +31,11 @@ export default function ProductImageUpload({ productId, images, onImageChange }:
     if (!files || files.length === 0) return;
 
     setUploading(true);
-    
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const isMain = images.length === 0 && i === 0; // First image becomes main if no images exist
-      
+
       try {
         await productsApi.uploadImage(productId, file, isMain, images.length + i);
         toast.success(`Uploaded ${file.name}`);
@@ -39,7 +43,7 @@ export default function ProductImageUpload({ productId, images, onImageChange }:
         toast.error(`Failed to upload ${file.name}`);
       }
     }
-    
+
     setUploading(false);
     onImageChange(); // Refresh the product data
     e.target.value = ''; // Clear input
@@ -57,7 +61,7 @@ export default function ProductImageUpload({ productId, images, onImageChange }:
 
   const handleDeleteImage = async (imageId: number) => {
     if (!confirm('Are you sure you want to delete this image?')) return;
-    
+
     try {
       await productsApi.deleteImage(imageId);
       toast.success('Image deleted');
@@ -87,23 +91,21 @@ export default function ProductImageUpload({ productId, images, onImageChange }:
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
           {images.map((image) => (
-            <div key={image.id} className="relative group border rounded-lg overflow-hidden bg-gray-50">
+            <div
+              key={image.id}
+              className="relative group border rounded-lg overflow-hidden bg-gray-50"
+            >
               <div className="aspect-square relative">
-                <Image
-                  src={image.image_url}
-                  alt="Product"
-                  fill
-                  className="object-cover"
-                />
+                <Image src={image.image_url} alt="Product" fill className="object-cover" />
               </div>
-              
+
               {/* Main badge */}
               {image.is_main && (
                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                   Main
                 </div>
               )}
-              
+
               {/* Action buttons */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 {!image.is_main && (

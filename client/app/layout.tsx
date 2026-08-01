@@ -13,17 +13,13 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Brothers Shop - Premium Clothing',
-  description: 'Premium men\'s clothing shop in Algeria',
+  description: "Premium men's clothing shop in Algeria",
   icons: {
     icon: '/favicon.ico',
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" dir="ltr">
       <head>

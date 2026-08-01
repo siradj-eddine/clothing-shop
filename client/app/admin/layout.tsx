@@ -5,11 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,7 +19,7 @@ export default function AdminLayout({
     } else {
       setIsAuthenticated(true);
     }
-    
+
     // Check if mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -83,8 +79,13 @@ export default function AdminLayout({
           `}
         >
           {/* Logo Area - Hidden on mobile when sidebar is closed */}
-          <div className={`p-5 flex items-center gap-3 border-b border-gray-100 ${isMobile && !isSidebarOpen ? 'hidden' : 'flex'}`}>
-            <span className="material-symbols-outlined text-3xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+          <div
+            className={`p-5 flex items-center gap-3 border-b border-gray-100 ${isMobile && !isSidebarOpen ? 'hidden' : 'flex'}`}
+          >
+            <span
+              className="material-symbols-outlined text-3xl text-primary"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
               storefront
             </span>
             <span className="font-semibold text-lg text-gray-800 whitespace-nowrap">

@@ -16,7 +16,8 @@ export default function OrderConfirmationPage() {
 
   useEffect(() => {
     if (id) {
-      ordersApi.getById(parseInt(id as string))
+      ordersApi
+        .getById(parseInt(id as string))
         .then(setOrder)
         .catch(() => router.push('/'))
         .finally(() => setLoading(false));
@@ -42,7 +43,10 @@ export default function OrderConfirmationPage() {
       <div className="max-w-3xl w-full mx-auto flex flex-col items-center">
         {/* Success Icon */}
         <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8">
-          <span className="material-symbols-outlined text-5xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+          <span
+            className="material-symbols-outlined text-5xl text-primary"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
             check_circle
           </span>
         </div>
@@ -56,14 +60,17 @@ export default function OrderConfirmationPage() {
             {t('orderConfirmation.orderId')} #{order.id}
           </p>
           <p className="font-body-md text-body-md text-on-surface-variant max-w-md">
-            {t('orderConfirmation.orderReceived')} {t('orderConfirmation.confirmationEmail', { email: order.customer_email })}
+            {t('orderConfirmation.orderReceived')}{' '}
+            {t('orderConfirmation.confirmationEmail', { email: order.customer_email })}
           </p>
         </div>
 
         {/* Order Details Card */}
         <div className="w-full bg-surface-container-lowest rounded-xl shadow-sm mt-12 overflow-hidden border border-outline-variant/30">
           <div className="p-8 md:p-10">
-            <h2 className="font-title-lg text-title-lg text-on-surface mb-8">{t('orderConfirmation.orderSummary')}</h2>
+            <h2 className="font-title-lg text-title-lg text-on-surface mb-8">
+              {t('orderConfirmation.orderSummary')}
+            </h2>
 
             {/* Items List */}
             <div className="space-y-6">
@@ -71,9 +78,13 @@ export default function OrderConfirmationPage() {
                 <div key={idx} className="flex items-start gap-4">
                   <div className="w-20 h-24 rounded bg-surface-variant flex-shrink-0" />
                   <div className="flex-grow">
-                    <h3 className="font-label-md text-label-md text-on-surface">{item.product_name}</h3>
+                    <h3 className="font-label-md text-label-md text-on-surface">
+                      {item.product_name}
+                    </h3>
                     <p className="font-body-md text-body-md text-secondary mt-1">
-                      {item.size && `${item.size} / `}{item.color && `${item.color} / `}{t('cart.quantity')} {item.quantity}
+                      {item.size && `${item.size} / `}
+                      {item.color && `${item.color} / `}
+                      {t('cart.quantity')} {item.quantity}
                     </p>
                   </div>
                   <div className="text-right">

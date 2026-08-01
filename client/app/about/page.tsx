@@ -9,14 +9,17 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      
       {/* Hero Section */}
       <section className="relative h-[500px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50 z-10"></div>
-          <div className="w-full h-full bg-cover bg-center" style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070')"
-          }}></div>
+          <div
+            className="w-full h-full bg-cover bg-center"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070')",
+            }}
+          ></div>
         </div>
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fadeIn">
@@ -33,7 +36,9 @@ export default function AboutPage() {
       <section className="py-20 px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="text-primary font-semibold uppercase tracking-wider text-sm">{t('about.storyTitle')}</span>
+            <span className="text-primary font-semibold uppercase tracking-wider text-sm">
+              {t('about.storyTitle')}
+            </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-6">
               {t('about.storyTitle')}
             </h2>
@@ -73,7 +78,9 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="order-1 lg:order-2">
-              <span className="text-primary font-semibold uppercase tracking-wider text-sm">{t('about.visitUs')}</span>
+              <span className="text-primary font-semibold uppercase tracking-wider text-sm">
+                {t('about.visitUs')}
+              </span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-6">
                 {t('about.location')}
               </h2>
@@ -99,7 +106,9 @@ export default function AboutPage() {
       {/* Values Section */}
       <section className="py-20 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-primary font-semibold uppercase tracking-wider text-sm">{t('about.valuesTitle')}</span>
+          <span className="text-primary font-semibold uppercase tracking-wider text-sm">
+            {t('about.valuesTitle')}
+          </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-4">
             {t('about.valuesTitle')}
           </h2>
@@ -111,7 +120,9 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-              <span className="material-symbols-outlined text-3xl text-primary group-hover:text-white">star</span>
+              <span className="material-symbols-outlined text-3xl text-primary group-hover:text-white">
+                star
+              </span>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">{t('about.valueQuality')}</h3>
             <p className="text-gray-500">{t('about.valueQualityText')}</p>
@@ -119,7 +130,9 @@ export default function AboutPage() {
 
           <div className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-              <span className="material-symbols-outlined text-3xl text-primary group-hover:text-white">payments</span>
+              <span className="material-symbols-outlined text-3xl text-primary group-hover:text-white">
+                payments
+              </span>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">{t('about.valuePrice')}</h3>
             <p className="text-gray-500">{t('about.valuePriceText')}</p>
@@ -127,7 +140,9 @@ export default function AboutPage() {
 
           <div className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-              <span className="material-symbols-outlined text-3xl text-primary group-hover:text-white">support_agent</span>
+              <span className="material-symbols-outlined text-3xl text-primary group-hover:text-white">
+                support_agent
+              </span>
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-3">{t('about.valueService')}</h3>
             <p className="text-gray-500">{t('about.valueServiceText')}</p>
@@ -158,12 +173,8 @@ export default function AboutPage() {
       {/* Call to Action */}
       <section className="py-20 px-4 text-center">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            {t('hero.title')}
-          </h2>
-          <p className="text-gray-500 mb-8 text-lg">
-            {t('hero.subtitle')}
-          </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('hero.title')}</h2>
+          <p className="text-gray-500 mb-8 text-lg">{t('hero.subtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/product"

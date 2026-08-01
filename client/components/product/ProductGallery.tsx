@@ -10,7 +10,13 @@ interface ProductImage {
   sort_order: number;
 }
 
-export default function ProductGallery({ images, productName }: { images: ProductImage[], productName: string }) {
+export default function ProductGallery({
+  images,
+  productName,
+}: {
+  images: ProductImage[];
+  productName: string;
+}) {
   const [selectedImage, setSelectedImage] = useState(images[0]?.image_url || '');
 
   return (
@@ -18,11 +24,7 @@ export default function ProductGallery({ images, productName }: { images: Produc
       <div className="bg-white rounded-2xl overflow-hidden shadow-md h-[350px] sm:h-[450px] lg:h-[500px] relative mb-3">
         {selectedImage ? (
           // Use img tag instead of Next.js Image to avoid domain issues
-          <img
-            src={selectedImage}
-            alt={productName}
-            className="w-full h-full object-contain p-4"
-          />
+          <img src={selectedImage} alt={productName} className="w-full h-full object-contain p-4" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
             <span className="material-symbols-outlined text-6xl">image_not_supported</span>

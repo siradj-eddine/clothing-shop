@@ -33,7 +33,10 @@ export default function AdminLoginPage() {
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <span
+              className="material-symbols-outlined text-3xl"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
               admin_panel_settings
             </span>
           </div>
@@ -83,12 +86,18 @@ export default function AdminLoginPage() {
 
           <div className="flex items-center justify-between">
             <label className="flex items-center">
-              <input type="checkbox" className="h-4 w-4 text-primary focus:ring-primary border-outline-variant rounded" />
+              <input
+                type="checkbox"
+                className="h-4 w-4 text-primary focus:ring-primary border-outline-variant rounded"
+              />
               <span className="ml-2 block font-label-md text-label-md text-on-surface-variant">
                 Remember me
               </span>
             </label>
-            <a href="#" className="font-label-md text-label-md text-primary hover:text-on-primary-fixed-variant">
+            <a
+              href="#"
+              className="font-label-md text-label-md text-primary hover:text-on-primary-fixed-variant"
+            >
               Forgot password?
             </a>
           </div>

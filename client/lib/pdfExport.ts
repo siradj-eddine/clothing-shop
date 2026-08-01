@@ -143,7 +143,9 @@ export const exportOrderToPDF = async (order: any, orderItems: any[]) => {
             <tr><th>Product</th><th>Size</th><th>Color</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
           </thead>
           <tbody>
-            ${orderItems.map((item: any) => `
+            ${orderItems
+              .map(
+                (item: any) => `
               <tr>
                 <td>${item.product_name}</td>
                 <td>${item.size || '-'}</td>
@@ -152,7 +154,9 @@ export const exportOrderToPDF = async (order: any, orderItems: any[]) => {
                 <td>${formatDA(parseFloat(item.product_price))}</td>
                 <td>${formatDA(parseFloat(item.product_price) * item.quantity)}</td>
               </tr>
-            `).join('')}
+            `
+              )
+              .join('')}
             <tr class="total-row">
               <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
               <td><strong>${formatDA(parseFloat(order.total))}</strong></td>
@@ -174,7 +178,7 @@ export const exportOrderToPDF = async (order: any, orderItems: any[]) => {
     filename: `Order_${order.id}_${order.customer_name}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, letterRendering: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
   };
 
   html2pdfLib().set(opt).from(element).save();

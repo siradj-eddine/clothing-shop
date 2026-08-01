@@ -45,7 +45,8 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dashboardApi.getStats()
+    dashboardApi
+      .getStats()
       .then((response) => {
         setData(response.data);
         setLoading(false);
@@ -75,7 +76,9 @@ export default function AdminDashboardPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="font-headline-md text-headline-md text-on-surface">{t('admin.dashboard')}</h1>
+        <h1 className="font-headline-md text-headline-md text-on-surface">
+          {t('admin.dashboard')}
+        </h1>
         <p className="font-body-md text-body-md text-on-surface-variant mt-1">
           {t('admin.welcomeBack')}
         </p>
@@ -85,29 +88,43 @@ export default function AdminDashboardPage() {
         <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 hover:shadow-md transition-all">
           <div className="flex justify-between items-start mb-4">
             <div className="p-3 bg-primary-container/20 rounded-lg">
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span
+                className="material-symbols-outlined text-primary"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
                 payments
               </span>
             </div>
-            <span className="text-green-600 text-xs bg-green-100 px-2 py-1 rounded-full">+12.5%</span>
+            <span className="text-green-600 text-xs bg-green-100 px-2 py-1 rounded-full">
+              +12.5%
+            </span>
           </div>
           <p className="text-secondary text-sm mb-1">{t('admin.totalRevenue')}</p>
-          <h3 className="text-3xl font-bold text-on-surface">{data.revenue.total.toFixed(2)} DZD</h3>
+          <h3 className="text-3xl font-bold text-on-surface">
+            {data.revenue.total.toFixed(2)} DZD
+          </h3>
           <p className="text-xs text-secondary mt-2">{t('admin.vsLastMonth')} +8.2%</p>
         </div>
 
         <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 hover:shadow-md transition-all">
           <div className="flex justify-between items-start mb-4">
             <div className="p-3 bg-secondary-container rounded-lg">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
                 shopping_bag
               </span>
             </div>
-            <span className="text-green-600 text-xs bg-green-100 px-2 py-1 rounded-full">+8.2%</span>
+            <span className="text-green-600 text-xs bg-green-100 px-2 py-1 rounded-full">
+              +8.2%
+            </span>
           </div>
           <p className="text-secondary text-sm mb-1">{t('admin.totalOrders')}</p>
           <h3 className="text-3xl font-bold text-on-surface">{data.orders.total}</h3>
-          <p className="text-xs text-secondary mt-2">{t('admin.pending')}: {data.orders.pending}</p>
+          <p className="text-xs text-secondary mt-2">
+            {t('admin.pending')}: {data.orders.pending}
+          </p>
         </div>
 
         <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 hover:shadow-md transition-all">
@@ -118,7 +135,9 @@ export default function AdminDashboardPage() {
           </div>
           <p className="text-secondary text-sm mb-1">{t('admin.activeProducts')}</p>
           <h3 className="text-3xl font-bold text-on-surface">{data.products.active}</h3>
-          <p className="text-xs text-secondary mt-2">{t('admin.totalProducts')}: {data.products.total}</p>
+          <p className="text-xs text-secondary mt-2">
+            {t('admin.totalProducts')}: {data.products.total}
+          </p>
         </div>
 
         <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/30 relative overflow-hidden hover:shadow-md transition-all">
@@ -128,24 +147,32 @@ export default function AdminDashboardPage() {
               <span className="material-symbols-outlined text-error">warning</span>
             </div>
             {data.products.low_stock > 0 && (
-              <span className="text-error text-xs bg-error/10 px-2 py-1 rounded-full">{t('admin.needsAttention')}</span>
+              <span className="text-error text-xs bg-error/10 px-2 py-1 rounded-full">
+                {t('admin.needsAttention')}
+              </span>
             )}
           </div>
           <p className="text-secondary text-sm mb-1">{t('admin.lowStockItems')}</p>
           <h3 className="text-3xl font-bold text-on-surface">{data.products.low_stock}</h3>
-          <p className="text-xs text-secondary mt-2">{t('admin.outOfStock')}: {data.products.out_of_stock}</p>
+          <p className="text-xs text-secondary mt-2">
+            {t('admin.outOfStock')}: {data.products.out_of_stock}
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6">
-          <h2 className="font-title-lg text-title-lg text-on-surface mb-4">{t('admin.ordersLast7Days')}</h2>
+          <h2 className="font-title-lg text-title-lg text-on-surface mb-4">
+            {t('admin.ordersLast7Days')}
+          </h2>
           <div className="h-64 flex items-end justify-between gap-2 pt-4">
             {data.charts.last_7_days.map((day, idx) => (
               <div key={idx} className="flex-1 text-center">
                 <div
                   className="bg-primary rounded-t-lg transition-all hover:bg-primary-container"
-                  style={{ height: `${(day.orders / Math.max(...data.charts.last_7_days.map(d => d.orders), 1)) * 200}px` }}
+                  style={{
+                    height: `${(day.orders / Math.max(...data.charts.last_7_days.map((d) => d.orders), 1)) * 200}px`,
+                  }}
                 ></div>
                 <p className="text-xs text-secondary mt-2">{day.date.slice(5)}</p>
                 <p className="text-xs font-medium text-on-surface">{day.orders}</p>
@@ -155,13 +182,17 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6">
-          <h2 className="font-title-lg text-title-lg text-on-surface mb-4">{t('admin.revenueLast7Days')}</h2>
+          <h2 className="font-title-lg text-title-lg text-on-surface mb-4">
+            {t('admin.revenueLast7Days')}
+          </h2>
           <div className="h-64 flex items-end justify-between gap-2 pt-4">
             {data.charts.last_7_days.map((day, idx) => (
               <div key={idx} className="flex-1 text-center">
                 <div
                   className="bg-green-500 rounded-t-lg transition-all hover:bg-green-400"
-                  style={{ height: `${(day.revenue / Math.max(...data.charts.last_7_days.map(d => d.revenue), 1)) * 200}px` }}
+                  style={{
+                    height: `${(day.revenue / Math.max(...data.charts.last_7_days.map((d) => d.revenue), 1)) * 200}px`,
+                  }}
                 ></div>
                 <p className="text-xs text-secondary mt-2">{day.date.slice(5)}</p>
                 <p className="text-xs font-medium text-on-surface">{day.revenue} DZD</p>
@@ -174,29 +205,38 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden">
           <div className="p-6 border-b border-outline-variant/30">
-            <h2 className="font-title-lg text-title-lg text-on-surface">{t('admin.topSellingProducts')}</h2>
+            <h2 className="font-title-lg text-title-lg text-on-surface">
+              {t('admin.topSellingProducts')}
+            </h2>
           </div>
           <div className="divide-y divide-outline-variant/30">
             {data.top_products.map((product, idx) => (
-              <div key={idx} className="p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors">
+              <div
+                key={idx}
+                className="p-4 flex justify-between items-center hover:bg-surface-container-low transition-colors"
+              >
                 <div>
                   <p className="font-label-md text-label-md text-on-surface">{product.name}</p>
-                  <p className="text-xs text-secondary">{product.total_sold} {t('admin.unitsSold')}</p>
+                  <p className="text-xs text-secondary">
+                    {product.total_sold} {t('admin.unitsSold')}
+                  </p>
                 </div>
-                <span className="text-sm font-medium text-on-surface">{t('admin.top')} #{idx + 1}</span>
+                <span className="text-sm font-medium text-on-surface">
+                  {t('admin.top')} #{idx + 1}
+                </span>
               </div>
             ))}
             {data.top_products.length === 0 && (
-              <div className="p-8 text-center text-secondary">
-                {t('admin.noSalesYet')}
-              </div>
+              <div className="p-8 text-center text-secondary">{t('admin.noSalesYet')}</div>
             )}
           </div>
         </div>
 
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden">
           <div className="p-6 border-b border-outline-variant/30 flex justify-between items-center">
-            <h2 className="font-title-lg text-title-lg text-on-surface">{t('admin.recentOrders')}</h2>
+            <h2 className="font-title-lg text-title-lg text-on-surface">
+              {t('admin.recentOrders')}
+            </h2>
             <Link href="/admin/orders" className="text-primary text-sm hover:underline">
               {t('admin.viewAll')}
             </Link>
@@ -206,13 +246,19 @@ export default function AdminDashboardPage() {
               <div key={order.id} className="p-4 hover:bg-surface-container-low transition-colors">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-label-md text-label-md text-on-surface">#{order.id}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    order.status === 'paid' ? 'bg-green-100 text-green-800' :
-                    order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                    order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      order.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : order.status === 'paid'
+                          ? 'bg-green-100 text-green-800'
+                          : order.status === 'shipped'
+                            ? 'bg-blue-100 text-blue-800'
+                            : order.status === 'delivered'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {t(`admin.${order.status}`)}
                   </span>
                 </div>

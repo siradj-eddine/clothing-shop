@@ -7,9 +7,6 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ordersApi } from '@/lib/api';
 
-// Use the OrderItem type from your types file instead of redeclaring
-import { OrderItem } from '@/lib/types';
-
 // Extend the Order type to include optional fields for the modal
 type OrderWithItems = Order & {
   subtotal?: string;
@@ -77,17 +74,18 @@ export default function AdminOrdersPage() {
   const updateOrderStatus = async (orderId: number, newStatus: string) => {
     setUpdatingStatus(orderId);
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
       const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_URL}/api/orders/${orderId}/`, {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status: newStatus }),
       });
-      
+
       if (response.ok) {
         toast.success(t('admin.orderStatusUpdated', { id: orderId, status: newStatus }));
         fetchOrders();
@@ -112,16 +110,17 @@ export default function AdminOrdersPage() {
 
     setDeletingOrder(orderId);
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL || 'https://clothing-shop-api-7r8z.onrender.com';
       const token = localStorage.getItem('access_token');
       const response = await fetch(`${API_URL}/api/orders/${orderId}/`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (response.ok) {
         toast.success(t('admin.orderDeleted', { id: orderId }));
         fetchOrders();
@@ -141,11 +140,16 @@ export default function AdminOrdersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'paid': return 'bg-blue-500 text-white';
-      case 'delivered': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'paid':
+        return 'bg-blue-500 text-white';
+      case 'delivered':
+        return 'bg-green-100 text-green-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -157,13 +161,21 @@ export default function AdminOrdersPage() {
     return `${Math.round(amount)} DZD`;
   };
 
-  const pendingCount = Array.isArray(orders) ? orders.filter(o => o.status === 'pending').length : 0;
-  const paidCount = Array.isArray(orders) ? orders.filter(o => o.status === 'paid').length : 0;
-  const deliveredCount = Array.isArray(orders) ? orders.filter(o => o.status === 'delivered').length : 0;
-  const cancelledCount = Array.isArray(orders) ? orders.filter(o => o.status === 'cancelled').length : 0;
-  
-  const filteredOrders = Array.isArray(orders) 
-    ? (filterStatus === 'all' ? orders : orders.filter(order => order.status === filterStatus))
+  const pendingCount = Array.isArray(orders)
+    ? orders.filter((o) => o.status === 'pending').length
+    : 0;
+  const paidCount = Array.isArray(orders) ? orders.filter((o) => o.status === 'paid').length : 0;
+  const deliveredCount = Array.isArray(orders)
+    ? orders.filter((o) => o.status === 'delivered').length
+    : 0;
+  const cancelledCount = Array.isArray(orders)
+    ? orders.filter((o) => o.status === 'cancelled').length
+    : 0;
+
+  const filteredOrders = Array.isArray(orders)
+    ? filterStatus === 'all'
+      ? orders
+      : orders.filter((order) => order.status === filterStatus)
     : [];
 
   if (loading) {
@@ -223,38 +235,57 @@ export default function AdminOrdersPage() {
           <table className="w-full">
             <thead className="bg-surface-bright border-b border-outline-variant/50">
               <tr>
-                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.orderId')}</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.customer')}</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.date')}</th>
-                <th className="p-4 text-right text-secondary text-sm font-medium">{t('admin.amount')}</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.status')}</th>
-                <th className="p-4 text-left text-secondary text-sm font-medium">{t('admin.updateStatus')}</th>
-                <th className="p-4 text-right text-secondary text-sm font-medium">{t('admin.actions')}</th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">
+                  {t('admin.orderId')}
+                </th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">
+                  {t('admin.customer')}
+                </th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">
+                  {t('admin.date')}
+                </th>
+                <th className="p-4 text-right text-secondary text-sm font-medium">
+                  {t('admin.amount')}
+                </th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">
+                  {t('admin.status')}
+                </th>
+                <th className="p-4 text-left text-secondary text-sm font-medium">
+                  {t('admin.updateStatus')}
+                </th>
+                <th className="p-4 text-right text-secondary text-sm font-medium">
+                  {t('admin.actions')}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/30">
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-surface-container-low transition-colors group">
+                <tr
+                  key={order.id}
+                  className="hover:bg-surface-container-low transition-colors group"
+                >
                   <td className="p-4">
                     <span className="font-medium text-on-surface">#{order.id}</span>
-                   </td>
+                  </td>
                   <td className="p-4">
                     <div>
                       <p className="font-medium text-on-surface">{order.customer_name}</p>
                       <p className="text-xs text-secondary">{order.customer_email}</p>
                     </div>
-                   </td>
+                  </td>
                   <td className="p-4 text-secondary">
                     {new Date(order.created_at).toLocaleDateString()}
-                   </td>
+                  </td>
                   <td className="p-4 text-right font-medium text-on-surface">
                     {formatDA(parseFloat(order.total))}
-                   </td>
+                  </td>
                   <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}
+                    >
                       {t(`admin.${order.status}`).toUpperCase()}
                     </span>
-                   </td>
+                  </td>
                   <td className="p-4">
                     <select
                       value={order.status}
@@ -271,7 +302,7 @@ export default function AdminOrdersPage() {
                     {updatingStatus === order.id && (
                       <span className="ml-2 inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
                     )}
-                   </td>
+                  </td>
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button
@@ -295,15 +326,15 @@ export default function AdminOrdersPage() {
                         {deletingOrder === order.id ? '...' : t('admin.delete')}
                       </button>
                     </div>
-                   </td>
-                 </tr>
+                  </td>
+                </tr>
               ))}
               {filteredOrders.length === 0 && (
                 <tr>
                   <td colSpan={7} className="p-8 text-center text-secondary">
                     {t('admin.noOrdersFound')}
-                   </td>
-                 </tr>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -315,7 +346,9 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
             <div className="p-6 border-b bg-white sticky top-0 z-10">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold">{t('admin.order')} #{selectedOrder.id}</h2>
+                <h2 className="text-xl font-bold">
+                  {t('admin.order')} #{selectedOrder.id}
+                </h2>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleExportPDF(selectedOrder)}
@@ -332,8 +365,11 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
             </div>
-            
-            <div className="overflow-y-auto p-6 space-y-6" style={{ maxHeight: 'calc(90vh - 80px)' }}>
+
+            <div
+              className="overflow-y-auto p-6 space-y-6"
+              style={{ maxHeight: 'calc(90vh - 80px)' }}
+            >
               {loadingDetails ? (
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -343,11 +379,22 @@ export default function AdminOrdersPage() {
                   <div>
                     <h3 className="font-semibold text-lg mb-3">{t('admin.customerInformation')}</h3>
                     <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                      <p><strong>{t('admin.name')}:</strong> {selectedOrder.customer_name}</p>
-                      <p><strong>{t('admin.email')}:</strong> {selectedOrder.customer_email}</p>
-                      <p><strong>{t('admin.phone')}:</strong> {selectedOrder.customer_phone || 'N/A'}</p>
-                      <p><strong>{t('admin.address')}:</strong> {selectedOrder.shipping_address}</p>
-                      <p><strong>{t('admin.date')}:</strong> {new Date(selectedOrder.created_at).toLocaleString()}</p>
+                      <p>
+                        <strong>{t('admin.name')}:</strong> {selectedOrder.customer_name}
+                      </p>
+                      <p>
+                        <strong>{t('admin.email')}:</strong> {selectedOrder.customer_email}
+                      </p>
+                      <p>
+                        <strong>{t('admin.phone')}:</strong> {selectedOrder.customer_phone || 'N/A'}
+                      </p>
+                      <p>
+                        <strong>{t('admin.address')}:</strong> {selectedOrder.shipping_address}
+                      </p>
+                      <p>
+                        <strong>{t('admin.date')}:</strong>{' '}
+                        {new Date(selectedOrder.created_at).toLocaleString()}
+                      </p>
                     </div>
                   </div>
 
@@ -376,12 +423,24 @@ export default function AdminOrdersPage() {
                         <table className="w-full border-collapse">
                           <thead className="bg-gray-50 sticky top-0">
                             <tr>
-                              <th className="p-3 text-left text-sm font-medium border">{t('admin.product')}</th>
-                              <th className="p-3 text-left text-sm font-medium border">{t('admin.size')}</th>
-                              <th className="p-3 text-left text-sm font-medium border">{t('admin.color')}</th>
-                              <th className="p-3 text-right text-sm font-medium border">{t('admin.quantity')}</th>
-                              <th className="p-3 text-right text-sm font-medium border">{t('admin.price')}</th>
-                              <th className="p-3 text-right text-sm font-medium border">{t('admin.total')}</th>
+                              <th className="p-3 text-left text-sm font-medium border">
+                                {t('admin.product')}
+                              </th>
+                              <th className="p-3 text-left text-sm font-medium border">
+                                {t('admin.size')}
+                              </th>
+                              <th className="p-3 text-left text-sm font-medium border">
+                                {t('admin.color')}
+                              </th>
+                              <th className="p-3 text-right text-sm font-medium border">
+                                {t('admin.quantity')}
+                              </th>
+                              <th className="p-3 text-right text-sm font-medium border">
+                                {t('admin.price')}
+                              </th>
+                              <th className="p-3 text-right text-sm font-medium border">
+                                {t('admin.total')}
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
@@ -391,7 +450,9 @@ export default function AdminOrdersPage() {
                                 <td className="p-3 border">{item.size || '-'}</td>
                                 <td className="p-3 border">{item.color || '-'}</td>
                                 <td className="p-3 text-right border">{item.quantity}</td>
-                                <td className="p-3 text-right border">{formatDA(parseFloat(item.product_price))}</td>
+                                <td className="p-3 text-right border">
+                                  {formatDA(parseFloat(item.product_price))}
+                                </td>
                                 <td className="p-3 text-right border">
                                   {formatDA(parseFloat(item.product_price) * item.quantity)}
                                 </td>
@@ -400,8 +461,12 @@ export default function AdminOrdersPage() {
                           </tbody>
                           <tfoot className="bg-gray-50">
                             <tr className="border-t">
-                              <td colSpan={5} className="p-3 text-right font-bold">{t('admin.total')}:</td>
-                              <td className="p-3 text-right font-bold">{formatDA(parseFloat(selectedOrder.total))}</td>
+                              <td colSpan={5} className="p-3 text-right font-bold">
+                                {t('admin.total')}:
+                              </td>
+                              <td className="p-3 text-right font-bold">
+                                {formatDA(parseFloat(selectedOrder.total))}
+                              </td>
                             </tr>
                           </tfoot>
                         </table>

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { ordersApi } from '@/lib/api';
 import { wilayas, getShippingCost } from '@/lib/wilayas';
@@ -29,21 +28,21 @@ export default function CheckoutPage() {
   }
 
   const subtotal = parseFloat(cart.total);
-  
+
   // Get base shipping cost
-  let shippingCost = getShippingCost(selectedWilaya);
-  
+  const shippingCost = getShippingCost(selectedWilaya);
+
   // Free shipping for orders over 10000 DZD
   const FREE_SHIPPING_THRESHOLD = 10000;
   const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
   const finalShippingCost = isFreeShipping ? 0 : shippingCost;
-  
+
   const total = subtotal + finalShippingCost;
 
   const handleWilayaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const wilayaId = parseInt(e.target.value);
     setSelectedWilaya(wilayaId);
-    setFormData(prev => ({ ...prev, wilaya_id: wilayaId }));
+    setFormData((prev) => ({ ...prev, wilaya_id: wilayaId }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,9 +50,9 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      const selectedWilayaData = wilayas.find(w => w.id === selectedWilaya);
+      const selectedWilayaData = wilayas.find((w) => w.id === selectedWilaya);
       const fullAddress = `${formData.shipping_address}, ${selectedWilayaData?.name}, Algeria`;
-      
+
       const order = await ordersApi.create({
         customer_name: formData.customer_name,
         customer_email: formData.customer_email,
@@ -62,7 +61,7 @@ export default function CheckoutPage() {
         subtotal: subtotal,
         shipping_cost: finalShippingCost,
         total: total,
-        items: cart.items.map(item => ({
+        items: cart.items.map((item) => ({
           product_id: item.product,
           product_name: item.product_name,
           product_price: item.product_price,
@@ -98,7 +97,9 @@ export default function CheckoutPage() {
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Contact Information */}
             <div>
-              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">{t('checkout.contactInfo')}</h2>
+              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">
+                {t('checkout.contactInfo')}
+              </h2>
               <div className="space-y-4">
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
@@ -118,7 +119,9 @@ export default function CheckoutPage() {
 
             {/* Shipping Address */}
             <div>
-              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">{t('checkout.shippingAddress')}</h2>
+              <h2 className="font-title-lg text-title-lg text-on-surface mb-4">
+                {t('checkout.shippingAddress')}
+              </h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -146,7 +149,7 @@ export default function CheckoutPage() {
                     />
                   </div>
                 </div>
-                
+
                 {/* Wilaya Selector */}
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1">
@@ -207,8 +210,10 @@ export default function CheckoutPage() {
         {/* Order Summary */}
         <div className="lg:col-span-5">
           <div className="sticky top-[100px] bg-surface-container-low rounded-xl p-6 shadow-md">
-            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{t('checkout.orderSummary')}</h3>
-            
+            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">
+              {t('checkout.orderSummary')}
+            </h3>
+
             <div className="space-y-4 max-h-[400px] overflow-y-auto mb-6">
               {cart.items.map((item) => {
                 const itemTotal = parseFloat(item.product_price) * item.quantity;
@@ -228,9 +233,12 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-label-md text-label-md text-on-surface">{item.product_name}</p>
+                      <p className="font-label-md text-label-md text-on-surface">
+                        {item.product_name}
+                      </p>
                       <p className="text-sm text-on-surface-variant">
-                        {item.size && `${item.size} / `}{item.color && `${item.color} / `}Qty: {item.quantity}
+                        {item.size && `${item.size} / `}
+                        {item.color && `${item.color} / `}Qty: {item.quantity}
                       </p>
                       <p className="font-label-md text-label-md text-on-surface mt-1">
                         {formatDA(itemTotal)}

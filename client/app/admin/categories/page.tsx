@@ -40,7 +40,7 @@ export default function AdminCategoriesPage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
-      setFormData(prev => ({ ...prev, slug }));
+      setFormData((prev) => ({ ...prev, slug }));
     }
   }, [formData.name]);
 
@@ -108,7 +108,9 @@ export default function AdminCategoriesPage() {
     <div className="p-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="font-headline-md text-headline-md text-on-surface">{t('admin.categories')}</h1>
+          <h1 className="font-headline-md text-headline-md text-on-surface">
+            {t('admin.categories')}
+          </h1>
           <p className="font-body-md text-body-md text-on-surface-variant mt-1">
             {t('admin.categoriesDescription')}
           </p>
@@ -130,8 +132,12 @@ export default function AdminCategoriesPage() {
           >
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-title-lg text-title-lg text-on-surface mb-1">{category.name}</h3>
-                <p className="text-sm text-on-surface-variant">{t('admin.slug')}: {category.slug}</p>
+                <h3 className="font-title-lg text-title-lg text-on-surface mb-1">
+                  {category.name}
+                </h3>
+                <p className="text-sm text-on-surface-variant">
+                  {t('admin.slug')}: {category.slug}
+                </p>
               </div>
               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
@@ -152,7 +158,9 @@ export default function AdminCategoriesPage() {
             </div>
             <div className="flex items-center gap-2 text-sm text-secondary">
               <span className="material-symbols-outlined text-[16px]">category</span>
-              <span>{category.product_count || 0} {t('admin.productsCount')}</span>
+              <span>
+                {category.product_count || 0} {t('admin.productsCount')}
+              </span>
             </div>
           </div>
         ))}
@@ -161,7 +169,9 @@ export default function AdminCategoriesPage() {
       {categories.length === 0 && (
         <div className="text-center py-12">
           <div className="w-20 h-20 bg-surface-variant rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-3xl text-on-surface-variant">category</span>
+            <span className="material-symbols-outlined text-3xl text-on-surface-variant">
+              category
+            </span>
           </div>
           <p className="text-on-surface-variant">{t('admin.noCategoriesYet')}</p>
         </div>
@@ -175,7 +185,9 @@ export default function AdminCategoriesPage() {
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">{t('admin.categoryName')} *</label>
+                <label className="block text-sm font-medium mb-1">
+                  {t('admin.categoryName')} *
+                </label>
                 <input
                   type="text"
                   required
@@ -212,7 +224,11 @@ export default function AdminCategoriesPage() {
                   disabled={submitting}
                   className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50"
                 >
-                  {submitting ? t('admin.saving') : (editingCategory ? t('admin.saveChanges') : t('admin.createCategory'))}
+                  {submitting
+                    ? t('admin.saving')
+                    : editingCategory
+                      ? t('admin.saveChanges')
+                      : t('admin.createCategory')}
                 </button>
               </div>
             </form>

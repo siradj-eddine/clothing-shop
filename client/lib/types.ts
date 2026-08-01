@@ -21,7 +21,7 @@ export interface Product {
   category: number;
   category_name: string;
   stock: number;
-  sizes: string[]; 
+  sizes: string[];
   colors: string[];
   is_active: boolean;
   images: ProductImage[];

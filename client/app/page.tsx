@@ -14,7 +14,8 @@ export default function Home() {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    productsApi.getAll({ page_size: 8 })
+    productsApi
+      .getAll({ page_size: 8 })
       .then((response) => {
         setFeaturedProducts(response.results);
         setLoading(false);
@@ -57,20 +58,26 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
             {t('homepage.featuredProducts')}
           </h2>
-          <Link href="/product" className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 group">
+          <Link
+            href="/product"
+            className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 group"
+          >
             {t('homepage.viewAll')}
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
           {featuredProducts.map((product, index) => (
-            <div 
-              key={product.id} 
+            <div
+              key={product.id}
               className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-fadeIn"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <Link href={`/product/${product.slug}`} className="block relative aspect-[3/4] overflow-hidden bg-gray-100">
+              <Link
+                href={`/product/${product.slug}`}
+                className="block relative aspect-[3/4] overflow-hidden bg-gray-100"
+              >
                 {product.main_image_url ? (
                   <img
                     src={product.main_image_url}
@@ -101,7 +108,9 @@ export default function Home() {
                 </Link>
                 <p className="text-sm text-gray-500 mb-2">{product.category_name}</p>
                 <div className="flex justify-between items-center mt-3">
-                  <span className="text-lg font-bold text-blue-600">{Math.round(parseFloat(product.price))} DZD</span>
+                  <span className="text-lg font-bold text-blue-600">
+                    {Math.round(parseFloat(product.price))} DZD
+                  </span>
                   <button
                     onClick={() => addToCart(product.id, 1)}
                     disabled={product.stock === 0}
@@ -118,9 +127,12 @@ export default function Home() {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center mt-8 md:hidden">
-          <Link href="/product" className="inline-flex items-center justify-center px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+          <Link
+            href="/product"
+            className="inline-flex items-center justify-center px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             {t('homepage.viewAll')} →
           </Link>
         </div>

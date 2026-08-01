@@ -19,7 +19,7 @@ export default function FAQsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-center mb-8">{t('faq.title')}</h1>
-      
+
       <div className="space-y-4">
         {faqs.map((faq, index) => (
           <div key={index} className="border rounded-lg overflow-hidden">

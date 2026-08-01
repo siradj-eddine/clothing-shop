@@ -40,9 +40,7 @@ export default function AddProductPage() {
   const [createdProductId, setCreatedProductId] = useState<number | null>(null);
 
   useEffect(() => {
-    productsApi.getCategories()
-      .then(setCategories)
-      .catch(console.error);
+    productsApi.getCategories().then(setCategories).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -51,25 +49,25 @@ export default function AddProductPage() {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-|-$/g, '');
-      setFormData(prev => ({ ...prev, slug }));
+      setFormData((prev) => ({ ...prev, slug }));
     }
   }, [formData.name]);
 
   const handleSizeToggle = (size: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sizes: prev.sizes.includes(size)
-        ? prev.sizes.filter(s => s !== size)
-        : [...prev.sizes, size]
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
     }));
   };
 
   const handleColorToggle = (color: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       colors: prev.colors.includes(color)
-        ? prev.colors.filter(c => c !== color)
-        : [...prev.colors, color]
+        ? prev.colors.filter((c) => c !== color)
+        : [...prev.colors, color],
     }));
   };
 
@@ -78,20 +76,25 @@ export default function AddProductPage() {
     if (!files || files.length === 0 || !createdProductId) return;
 
     setUploadingImages(true);
-    
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const isMain = images.length === 0 && i === 0;
-      
+
       try {
-        const uploadedImage = await productsApi.uploadImage(createdProductId, file, isMain, images.length + i);
-        setImages(prev => [...prev, uploadedImage]);
+        const uploadedImage = await productsApi.uploadImage(
+          createdProductId,
+          file,
+          isMain,
+          images.length + i
+        );
+        setImages((prev) => [...prev, uploadedImage]);
         toast.success(`${t('admin.uploaded')} ${file.name}`);
       } catch (error) {
         toast.error(`${t('admin.failedToUpload')} ${file.name}`);
       }
     }
-    
+
     setUploadingImages(false);
     e.target.value = '';
   };
@@ -99,10 +102,12 @@ export default function AddProductPage() {
   const handleSetMainImage = async (imageId: number) => {
     try {
       await productsApi.setMainImage(imageId);
-      setImages(prev => prev.map(img => ({
-        ...img,
-        is_main: img.id === imageId
-      })));
+      setImages((prev) =>
+        prev.map((img) => ({
+          ...img,
+          is_main: img.id === imageId,
+        }))
+      );
       toast.success(t('admin.mainImageUpdated'));
     } catch (error) {
       toast.error(t('admin.failedToSetMainImage'));
@@ -111,10 +116,10 @@ export default function AddProductPage() {
 
   const handleDeleteImage = async (imageId: number) => {
     if (!confirm(t('admin.confirmDeleteImage'))) return;
-    
+
     try {
       await productsApi.deleteImage(imageId);
-      setImages(prev => prev.filter(img => img.id !== imageId));
+      setImages((prev) => prev.filter((img) => img.id !== imageId));
       toast.success(t('admin.imageDeleted'));
     } catch (error) {
       toast.error(t('admin.failedToDeleteImage'));
@@ -137,10 +142,9 @@ export default function AddProductPage() {
         colors: formData.colors,
         is_active: formData.is_active,
       });
-      
+
       setCreatedProductId(newProduct.id);
       toast.success(t('admin.productCreated'));
-      
     } catch (error: any) {
       toast.error(error.response?.data?.message || t('admin.failedToCreateProduct'));
       setLoading(false);
@@ -170,7 +174,7 @@ export default function AddProductPage() {
 
         <div className="bg-white rounded-lg border p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.productImages')}</h2>
-          
+
           <div className="mb-4">
             <input
               type="file"
@@ -180,30 +184,26 @@ export default function AddProductPage() {
               disabled={uploadingImages}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              {t('admin.uploadImagesHint')}
-            </p>
+            <p className="text-xs text-gray-500 mt-1">{t('admin.uploadImagesHint')}</p>
           </div>
 
           {images.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
               {images.map((image) => (
-                <div key={image.id} className="relative group border rounded-lg overflow-hidden bg-gray-50">
+                <div
+                  key={image.id}
+                  className="relative group border rounded-lg overflow-hidden bg-gray-50"
+                >
                   <div className="aspect-square relative">
-                    <Image
-                      src={image.image_url}
-                      alt="Product"
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={image.image_url} alt="Product" fill className="object-cover" />
                   </div>
-                  
+
                   {image.is_main && (
                     <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                       {t('admin.main')}
                     </div>
                   )}
-                  
+
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     {!image.is_main && (
                       <button
@@ -246,11 +246,21 @@ export default function AddProductPage() {
 
         <div className="bg-gray-50 rounded-lg border p-6">
           <h3 className="font-semibold mb-2">{t('admin.productInformation')}</h3>
-          <p><strong>{t('admin.name')}:</strong> {formData.name}</p>
-          <p><strong>{t('admin.price')}:</strong> {formData.price} DZD</p>
-          <p><strong>{t('admin.stock')}:</strong> {formData.stock}</p>
-          <p><strong>{t('admin.sizes')}:</strong> {formData.sizes.join(', ') || t('admin.none')}</p>
-          <p><strong>{t('admin.colors')}:</strong> {formData.colors.join(', ') || t('admin.none')}</p>
+          <p>
+            <strong>{t('admin.name')}:</strong> {formData.name}
+          </p>
+          <p>
+            <strong>{t('admin.price')}:</strong> {formData.price} DZD
+          </p>
+          <p>
+            <strong>{t('admin.stock')}:</strong> {formData.stock}
+          </p>
+          <p>
+            <strong>{t('admin.sizes')}:</strong> {formData.sizes.join(', ') || t('admin.none')}
+          </p>
+          <p>
+            <strong>{t('admin.colors')}:</strong> {formData.colors.join(', ') || t('admin.none')}
+          </p>
         </div>
       </div>
     );
@@ -268,7 +278,7 @@ export default function AddProductPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.basicInformation')}</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.productName')} *</label>
@@ -280,7 +290,7 @@ export default function AddProductPage() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.slug')}</label>
               <input
@@ -306,7 +316,7 @@ export default function AddProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.pricingAndInventory')}</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.priceDZD')} *</label>
@@ -319,7 +329,7 @@ export default function AddProductPage() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.stock')} *</label>
               <input
@@ -330,7 +340,7 @@ export default function AddProductPage() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.category')}</label>
               <select
@@ -340,7 +350,9 @@ export default function AddProductPage() {
               >
                 <option value="">{t('admin.selectCategory')}</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -349,7 +361,7 @@ export default function AddProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.sizesMultiple')}</h2>
-          
+
           <div className="mb-4">
             <div className="flex flex-wrap gap-2">
               {sizes.map((size) => (
@@ -377,7 +389,7 @@ export default function AddProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.colorsMultiple')}</h2>
-          
+
           <div>
             <div className="flex flex-wrap gap-2">
               {colorOptions.map((color) => (

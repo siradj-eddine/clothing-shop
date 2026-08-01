@@ -66,10 +66,14 @@ export default function ProductsPage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-outline-variant pb-6">
         <div>
-          <h1 className="font-headline-md text-headline-md text-on-surface mb-2">{t('products.title')}</h1>
-          <p className="font-body-md text-body-md text-on-surface-variant">{t('products.subtitle')}</p>
+          <h1 className="font-headline-md text-headline-md text-on-surface mb-2">
+            {t('products.title')}
+          </h1>
+          <p className="font-body-md text-body-md text-on-surface-variant">
+            {t('products.subtitle')}
+          </p>
         </div>
-        
+
         <div className="flex items-center gap-3 mt-4 md:mt-0 w-full md:w-auto">
           {/* Mobile Filter Button */}
           <button
@@ -79,7 +83,7 @@ export default function ProductsPage() {
             <span className="material-symbols-outlined text-[18px]">filter_list</span>
             {t('products.filter')}
           </button>
-          
+
           {/* Sort Dropdown */}
           <select
             value={sortBy}
@@ -95,10 +99,14 @@ export default function ProductsPage() {
 
       <div className="flex flex-col lg:flex-row gap-gutter">
         {/* Sidebar Filters */}
-        <aside className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-full lg:w-64 flex-shrink-0 space-y-8 bg-white lg:bg-transparent rounded-xl p-6 lg:p-0 shadow-sm lg:shadow-none`}>
+        <aside
+          className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-full lg:w-64 flex-shrink-0 space-y-8 bg-white lg:bg-transparent rounded-xl p-6 lg:p-0 shadow-sm lg:shadow-none`}
+        >
           {/* Categories */}
           <div>
-            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{t('products.categories')}</h3>
+            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">
+              {t('products.categories')}
+            </h3>
             <ul className="space-y-3">
               <li>
                 <label className="flex items-center space-x-3 cursor-pointer group">
@@ -108,7 +116,9 @@ export default function ProductsPage() {
                     onChange={() => setSelectedCategory('')}
                     className="form-checkbox h-5 w-5 text-primary border-outline-variant rounded focus:ring-primary"
                   />
-                  <span className={`font-body-md text-body-md ${!selectedCategory ? 'text-primary font-medium' : 'text-on-surface group-hover:text-primary'} transition-colors`}>
+                  <span
+                    className={`font-body-md text-body-md ${!selectedCategory ? 'text-primary font-medium' : 'text-on-surface group-hover:text-primary'} transition-colors`}
+                  >
                     {t('products.allProducts')}
                   </span>
                 </label>
@@ -119,10 +129,14 @@ export default function ProductsPage() {
                     <input
                       type="checkbox"
                       checked={selectedCategory === cat.slug}
-                      onChange={() => setSelectedCategory(selectedCategory === cat.slug ? '' : cat.slug)}
+                      onChange={() =>
+                        setSelectedCategory(selectedCategory === cat.slug ? '' : cat.slug)
+                      }
                       className="form-checkbox h-5 w-5 text-primary border-outline-variant rounded focus:ring-primary"
                     />
-                    <span className={`font-body-md text-body-md ${selectedCategory === cat.slug ? 'text-primary font-medium' : 'text-on-surface group-hover:text-primary'} transition-colors`}>
+                    <span
+                      className={`font-body-md text-body-md ${selectedCategory === cat.slug ? 'text-primary font-medium' : 'text-on-surface group-hover:text-primary'} transition-colors`}
+                    >
                       {cat.name}
                     </span>
                   </label>
@@ -133,7 +147,9 @@ export default function ProductsPage() {
 
           {/* Sizes */}
           <div>
-            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{t('products.size')}</h3>
+            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">
+              {t('products.size')}
+            </h3>
             <div className="flex flex-wrap gap-2">
               {sizes.map((size) => (
                 <button
@@ -153,7 +169,9 @@ export default function ProductsPage() {
 
           {/* Price Range */}
           <div>
-            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{t('products.priceRange')}</h3>
+            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">
+              {t('products.priceRange')}
+            </h3>
             <div className="px-2">
               <input
                 type="range"
@@ -164,7 +182,7 @@ export default function ProductsPage() {
                 onChange={(e) => setPriceRange(parseInt(e.target.value))}
                 className="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #0058be 0%, #0058be ${(priceRange / 50000) * 100}%, #d3e4fe ${(priceRange / 50000) * 100}%, #d3e4fe 100%)`
+                  background: `linear-gradient(to right, #0058be 0%, #0058be ${(priceRange / 50000) * 100}%, #d3e4fe ${(priceRange / 50000) * 100}%, #d3e4fe 100%)`,
                 }}
               />
               <div className="flex justify-between mt-4 font-label-md text-label-md text-on-surface-variant">
@@ -177,7 +195,10 @@ export default function ProductsPage() {
 
           {/* Reset Filters */}
           {(selectedCategory || selectedSize || priceRange < 50000) && (
-            <button onClick={resetFilters} className="w-full mt-4 py-2 text-sm text-primary hover:text-primary-dark font-medium">
+            <button
+              onClick={resetFilters}
+              className="w-full mt-4 py-2 text-sm text-primary hover:text-primary-dark font-medium"
+            >
               {t('products.resetFilters')}
             </button>
           )}
@@ -207,7 +228,9 @@ export default function ProductsPage() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-outline">
-                          <span className="material-symbols-outlined text-4xl">image_not_supported</span>
+                          <span className="material-symbols-outlined text-4xl">
+                            image_not_supported
+                          </span>
                         </div>
                       )}
                     </Link>
@@ -243,7 +266,9 @@ export default function ProductsPage() {
                         {product.name}
                       </h3>
                     </Link>
-                    <p className="text-sm text-on-surface-variant mt-1">{Math.round(parseFloat(product.price))} DZD</p>
+                    <p className="text-sm text-on-surface-variant mt-1">
+                      {Math.round(parseFloat(product.price))} DZD
+                    </p>
                   </div>
                 </div>
               ))}
@@ -256,9 +281,15 @@ export default function ProductsPage() {
               <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container hover:text-primary transition-colors">
                 ←
               </button>
-              <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded bg-primary text-white text-sm font-medium">1</button>
-              <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:border-primary hover:text-primary text-sm transition-colors">2</button>
-              <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:border-primary hover:text-primary text-sm transition-colors">3</button>
+              <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded bg-primary text-white text-sm font-medium">
+                1
+              </button>
+              <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:border-primary hover:text-primary text-sm transition-colors">
+                2
+              </button>
+              <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:border-primary hover:text-primary text-sm transition-colors">
+                3
+              </button>
               <button className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface hover:bg-surface-container hover:text-primary transition-colors">
                 →
               </button>

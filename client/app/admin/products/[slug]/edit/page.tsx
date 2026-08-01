@@ -52,7 +52,7 @@ export default function EditProductPage() {
         price: product.price,
         category: product.category?.toString() || '',
         stock: product.stock.toString(),
-        sizes: product.sizes || [], 
+        sizes: product.sizes || [],
         colors: product.colors || [],
         is_active: product.is_active,
       });
@@ -65,10 +65,7 @@ export default function EditProductPage() {
   };
 
   useEffect(() => {
-    Promise.all([
-      productsApi.getCategories(),
-      fetchProductData()
-    ])
+    Promise.all([productsApi.getCategories(), fetchProductData()])
       .then(([cats]) => {
         setCategories(cats);
         setLoading(false);
@@ -77,20 +74,20 @@ export default function EditProductPage() {
   }, [slug]);
 
   const handleSizeToggle = (size: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       sizes: prev.sizes.includes(size)
-        ? prev.sizes.filter(s => s !== size)
-        : [...prev.sizes, size]
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size],
     }));
   };
 
   const handleColorToggle = (color: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       colors: prev.colors.includes(color)
-        ? prev.colors.filter(c => c !== color)
-        : [...prev.colors, color]
+        ? prev.colors.filter((c) => c !== color)
+        : [...prev.colors, color],
     }));
   };
 
@@ -102,21 +99,26 @@ export default function EditProductPage() {
     }
 
     setUploadingImages(true);
-    
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const isMain = images.length === 0 && i === 0;
-      
+
       try {
-        const uploadedImage = await productsApi.uploadImage(productId, file, isMain, images.length + i);
-        setImages(prev => [...prev, uploadedImage]);
+        const uploadedImage = await productsApi.uploadImage(
+          productId,
+          file,
+          isMain,
+          images.length + i
+        );
+        setImages((prev) => [...prev, uploadedImage]);
         toast.success(`${t('admin.uploaded')} ${file.name}`);
       } catch (error: any) {
         console.error('Upload error:', error);
         toast.error(error.response?.data?.message || `${t('admin.failedToUpload')} ${file.name}`);
       }
     }
-    
+
     setUploadingImages(false);
     e.target.value = '';
   };
@@ -124,10 +126,12 @@ export default function EditProductPage() {
   const handleSetMainImage = async (imageId: number) => {
     try {
       await productsApi.setMainImage(imageId);
-      setImages(prev => prev.map(img => ({
-        ...img,
-        is_main: img.id === imageId
-      })));
+      setImages((prev) =>
+        prev.map((img) => ({
+          ...img,
+          is_main: img.id === imageId,
+        }))
+      );
       toast.success(t('admin.mainImageUpdated'));
     } catch (error) {
       toast.error(t('admin.failedToSetMainImage'));
@@ -136,10 +140,10 @@ export default function EditProductPage() {
 
   const handleDeleteImage = async (imageId: number) => {
     if (!confirm(t('admin.confirmDeleteImage'))) return;
-    
+
     try {
       await productsApi.deleteImage(imageId);
-      setImages(prev => prev.filter(img => img.id !== imageId));
+      setImages((prev) => prev.filter((img) => img.id !== imageId));
       toast.success(t('admin.imageDeleted'));
     } catch (error) {
       toast.error(t('admin.failedToDeleteImage'));
@@ -161,7 +165,7 @@ export default function EditProductPage() {
         colors: formData.colors,
         is_active: formData.is_active,
       });
-      
+
       toast.success(t('admin.productUpdated'));
       fetchProductData();
     } catch (error: any) {
@@ -191,7 +195,7 @@ export default function EditProductPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.basicInformation')}</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.productName')} *</label>
@@ -203,7 +207,7 @@ export default function EditProductPage() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.slug')}</label>
               <input
@@ -229,7 +233,7 @@ export default function EditProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.pricingAndInventory')}</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.priceDZD')} *</label>
@@ -242,7 +246,7 @@ export default function EditProductPage() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.stock')} *</label>
               <input
@@ -253,7 +257,7 @@ export default function EditProductPage() {
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium mb-1">{t('admin.category')}</label>
               <select
@@ -263,7 +267,9 @@ export default function EditProductPage() {
               >
                 <option value="">{t('admin.selectCategory')}</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -272,7 +278,7 @@ export default function EditProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.productImages')}</h2>
-          
+
           <div className="mb-4">
             <input
               type="file"
@@ -282,9 +288,7 @@ export default function EditProductPage() {
               disabled={uploadingImages}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              {t('admin.uploadImagesHint')}
-            </p>
+            <p className="text-xs text-gray-500 mt-1">{t('admin.uploadImagesHint')}</p>
             {productId && (
               <p className="text-xs text-green-600 mt-1">
                 {t('admin.productIdReady', { id: productId })}
@@ -295,22 +299,20 @@ export default function EditProductPage() {
           {images.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
               {images.map((image) => (
-                <div key={image.id} className="relative group border rounded-lg overflow-hidden bg-gray-50">
+                <div
+                  key={image.id}
+                  className="relative group border rounded-lg overflow-hidden bg-gray-50"
+                >
                   <div className="aspect-square relative">
-                    <Image
-                      src={image.image_url}
-                      alt="Product"
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={image.image_url} alt="Product" fill className="object-cover" />
                   </div>
-                  
+
                   {image.is_main && (
                     <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                       {t('admin.main')}
                     </div>
                   )}
-                  
+
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     {!image.is_main && (
                       <button
@@ -353,7 +355,7 @@ export default function EditProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.sizesMultiple')}</h2>
-          
+
           <div className="mb-4">
             <div className="flex flex-wrap gap-2">
               {sizes.map((size) => (
@@ -381,7 +383,7 @@ export default function EditProductPage() {
 
         <div className="bg-white rounded-lg border p-6">
           <h2 className="text-lg font-semibold mb-4">{t('admin.colorsMultiple')}</h2>
-          
+
           <div>
             <div className="flex flex-wrap gap-2">
               {colorOptions.map((color) => (
