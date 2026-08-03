@@ -12,6 +12,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
+  metadataBase: new URL('https://clothing-shop-livid.vercel.app'),
   title: {
     default: "Brothers Shop - Premium Men's Clothing in Algeria",
     template: '%s | Brothers Shop',
