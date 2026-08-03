@@ -52,29 +52,29 @@
     "previous": "Previous",
     "next": "Next"
   },
-"productDetail": {
-  "selectSize": "Select Size",
-  "selectColor": "Select Color",
-  "selected": "Selected",
-  "required": "Required",
-  "optional": "Optional",
-  "quantity": "Quantity",
-  "outOfStock": "Out of Stock",
-  "inStock": "In Stock",
-  "units": "units",
-  "onlyLeft": "Only {stock} left in stock!",
-  "addToCart": "Add to Cart",
-  "productDetails": "Product Details",
-  "shippingReturns": "Shipping & Returns",
-  "freeShipping": "Free shipping on orders over 10,000 DZD",
-  "returnsPolicy": "Returns accepted within 30 days of purchase in unworn condition with tags attached.",
-  "premiumQuality": "Premium quality material",
-  "comfortableFit": "Comfortable fit",
-  "machineWashable": "Machine washable",
-  "sizeGuide": "Size Guide",
-  "backToProducts": "Back to Products",
-  "selectSizeError": "Please select a size"
-},
+  "productDetail": {
+    "selectSize": "Select Size",
+    "selectColor": "Select Color",
+    "selected": "Selected",
+    "required": "Required",
+    "optional": "Optional",
+    "quantity": "Quantity",
+    "outOfStock": "Out of Stock",
+    "inStock": "In Stock",
+    "units": "units",
+    "onlyLeft": "Only {stock} left in stock!",
+    "addToCart": "Add to Cart",
+    "productDetails": "Product Details",
+    "shippingReturns": "Shipping & Returns",
+    "freeShipping": "Free shipping on orders over 10,000 DZD",
+    "returnsPolicy": "Returns accepted within 30 days of purchase in unworn condition with tags attached.",
+    "premiumQuality": "Premium quality material",
+    "comfortableFit": "Comfortable fit",
+    "machineWashable": "Machine washable",
+    "sizeGuide": "Size Guide",
+    "backToProducts": "Back to Products",
+    "selectSizeError": "Please select a size"
+  },
   "cart": {
     "title": "Shopping Cart",
     "continueShopping": "Continue Shopping",
@@ -168,7 +168,7 @@
     "followUs": "Follow Us",
     "rightsReserved": "All rights reserved."
   },
-  
+
   "admin": {
     "dashboard": "Dashboard",
     "welcomeBack": "Welcome back! Here's what's happening with your store today.",
@@ -321,7 +321,7 @@
     "serverError": "Server Error",
     "serverErrorMessage": "Something went wrong. Please try again later."
   },
-  
+
   "faq": {
     "title": "Frequently Asked Questions",
     "q1": "How do I track my order?",
@@ -380,7 +380,4 @@
     "waistGuide": "Measure around your natural waistline, keeping the tape comfortably loose.",
     "hipGuide": "Measure around the fullest part of your hips."
   }
- 
-
 }
-  

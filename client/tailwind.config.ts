@@ -51,9 +51,15 @@ const config: Config = {
         'display-lg': ['48px', { lineHeight: '56px', letterSpacing: '-0.02em', fontWeight: '700' }],
         'headline-sm': ['24px', { lineHeight: '32px', fontWeight: '600' }],
         'title-lg': ['20px', { lineHeight: '28px', fontWeight: '600' }],
-        'headline-md': ['30px', { lineHeight: '38px', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'headline-md': [
+          '30px',
+          { lineHeight: '38px', letterSpacing: '-0.01em', fontWeight: '600' },
+        ],
         'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
-        'display-lg-mobile': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'display-lg-mobile': [
+          '36px',
+          { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' },
+        ],
       },
       borderRadius: {
         DEFAULT: '0.25rem',

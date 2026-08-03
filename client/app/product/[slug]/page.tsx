@@ -1,7 +1,7 @@
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import ProductGallery from '@/components/product/ProductGallery';
-import ProductActions from '@/components/product/ProductActions';
+import ProductDetailClient from '@/components/product/ProductDetailClient';
+import ProductStructuredData from '@/components/ProductStructuredData';
 
 interface ProductImage {
   id: number;
@@ -26,12 +26,7 @@ interface Product {
   category_name: string;
 }
 
-// ONLY use environment variable - NO hardcoded fallback
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-  console.error('NEXT_PUBLIC_API_URL is not set!');
-}
 
 async function getProduct(slug: string): Promise<Product | null> {
   try {
@@ -46,6 +41,46 @@ async function getProduct(slug: string): Promise<Product | null> {
   }
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const product = await getProduct(params.slug);
+
+  if (!product) {
+    return {
+      title: 'Product Not Found | Brothers Shop',
+    };
+  }
+
+  const title = `${product.name} - Brothers Shop`;
+  const description =
+    product.description ||
+    `Shop ${product.name} at Brothers Shop. Premium men's clothing in Algeria.`;
+  const imageUrl = product.main_image_url || '/logo.png';
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `https://clothing-shop-livid.vercel.app/product/${product.slug}`,
+    },
+    openGraph: {
+      title,
+      description,
+      images: [{ url: imageUrl }],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
+
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
 
@@ -56,7 +91,6 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   // Build images array properly
   const allImages: ProductImage[] = [];
 
-  // Add main image if exists
   if (product.main_image_url) {
     allImages.push({
       id: 0,
@@ -67,7 +101,6 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     });
   }
 
-  // Add other images
   if (product.images && product.images.length > 0) {
     product.images.forEach((img) => {
       if (!allImages.some((existing) => existing.image_url === img.image_url)) {
@@ -82,93 +115,14 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     : ['Black', 'White', 'Blue', 'Red', 'Green'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumbs */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center text-xs sm:text-sm text-gray-500">
-            <Link href="/" className="hover:text-blue-600 transition-colors">
-              Home
-            </Link>
-            <span className="mx-2">›</span>
-            <Link href="/product" className="hover:text-blue-600 transition-colors">
-              Products
-            </Link>
-            <span className="mx-2">›</span>
-            <span className="text-gray-900 font-medium truncate max-w-[200px]">{product.name}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Product Detail */}
-      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-10">
-        <div className="flex flex-col lg:flex-row lg:gap-8 xl:gap-12">
-          {/* Left: Image Gallery */}
-          <div className="lg:w-1/2 mb-6 lg:mb-0">
-            {allImages.length > 0 ? (
-              <ProductGallery images={allImages} productName={product.name} />
-            ) : (
-              <div className="bg-white rounded-2xl overflow-hidden shadow-md h-[350px] sm:h-[450px] lg:h-[500px] flex items-center justify-center">
-                <div className="text-center text-gray-400">
-                  <span className="material-symbols-outlined text-6xl">image_not_supported</span>
-                  <p className="mt-2 text-sm">No image available</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right: Product Info */}
-          <div className="lg:w-1/2">
-            <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-sm">
-              <p className="text-xs sm:text-sm text-blue-600 font-medium mb-2">
-                {product.category_name || 'Uncategorized'}
-              </p>
-
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-                {product.name}
-              </h1>
-
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-600">
-                  {Math.round(parseFloat(product.price))} DZD
-                </span>
-                {product.stock > 0 && (
-                  <span className="text-xs sm:text-sm text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                    In Stock
-                  </span>
-                )}
-              </div>
-
-              <div className="border-t border-gray-100 pt-6 mb-6">
-                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                  {product.description || 'No description available.'}
-                </p>
-              </div>
-
-              <ProductActions
-                productId={product.id}
-                productName={product.name}
-                stock={product.stock}
-                sizes={availableSizes}
-                colors={availableColors}
-              />
-
-              <div className="border-t border-gray-100 mt-8 pt-6">
-                <div className="grid grid-cols-2 gap-4 text-xs sm:text-sm">
-                  <div>
-                    <span className="text-gray-500">SKU:</span>
-                    <span className="ml-2 text-gray-900">#{product.id}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Category:</span>
-                    <span className="ml-2 text-gray-900">{product.category_name || '-'}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <>
+      <ProductStructuredData product={product} />
+      <ProductDetailClient
+        product={product}
+        allImages={allImages}
+        availableSizes={availableSizes}
+        availableColors={availableColors}
+      />
+    </>
   );
 }

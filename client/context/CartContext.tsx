@@ -42,17 +42,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addToCart = async (productId: number, quantity: number, size?: string, color?: string) => {
-  console.log('CartContext.addToCart called:', { productId, quantity, size, color });
-  try {
-    const updatedCart = await cartApi.add(productId, quantity, size, color);
-    console.log('Cart updated:', updatedCart);
-    setCart(updatedCart);
-    toast.success('Added to cart!');
-  } catch (error: any) {
-    console.error('Add to cart error:', error);
-    toast.error(error.response?.data?.error || 'Failed to add to cart');
-  }
-};
+    console.log('CartContext.addToCart called:', { productId, quantity, size, color });
+    try {
+      const updatedCart = await cartApi.add(productId, quantity, size, color);
+      console.log('Cart updated:', updatedCart);
+      setCart(updatedCart);
+      toast.success('Added to cart!');
+    } catch (error: any) {
+      console.error('Add to cart error:', error);
+      toast.error(error.response?.data?.error || 'Failed to add to cart');
+    }
+  };
 
   const updateQuantity = async (itemId: number, quantity: number) => {
     try {

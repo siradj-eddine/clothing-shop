@@ -19,8 +19,17 @@ export const useAddToCart = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ productId, quantity, size, color }: { productId: number; quantity: number; size?: string; color?: string }) =>
-      cartApi.add(productId, quantity, size, color),
+    mutationFn: ({
+      productId,
+      quantity,
+      size,
+      color,
+    }: {
+      productId: number;
+      quantity: number;
+      size?: string;
+      color?: string;
+    }) => cartApi.add(productId, quantity, size, color),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: cartKeys.detail() });
       toast.success('Added to cart!');
