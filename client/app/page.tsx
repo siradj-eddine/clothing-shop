@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import HomeClient from './HomeClient';
+import { Product } from '@/lib/types';
 
 export const metadata: Metadata = {
   title: "Premium Men's Clothing in Algeria | Brothers Shop",
@@ -16,6 +17,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  return <HomeClient />;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+async function getFeaturedProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/products/?page_size=8`, {
+      // Revalidate periodically instead of no-store, since the homepage
+      // benefits from being statically cached rather than fetched fresh
+      // on every single request.
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results || [];
+  } catch (error) {
+    console.error('Failed to fetch featured products:', error);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const featuredProducts = await getFeaturedProducts();
+
+  return <HomeClient initialProducts={featuredProducts} />;
 }

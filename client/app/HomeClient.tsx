@@ -1,35 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { productsApi } from '@/lib/api';
 import { Product } from '@/lib/types';
 import { useCart } from '@/context/CartContext';
 import { useTranslation } from 'react-i18next';
 
-export default function Home() {
+interface HomeClientProps {
+  initialProducts: Product[];
+}
+
+export default function Home({ initialProducts }: HomeClientProps) {
   const { t } = useTranslation();
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    productsApi
-      .getAll({ page_size: 8 })
-      .then((response) => {
-        setFeaturedProducts(response.results);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const featuredProducts = initialProducts;
 
   return (
     <>
