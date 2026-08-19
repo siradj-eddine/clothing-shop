@@ -423,15 +423,12 @@ $RECYCLE.BIN/
 media/
 staticfiles/
 static/
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.svg
-*.ico
-*.mp4
-*.mp3
-*.webm
+server/media/
+server/staticfiles/
+
+# Keep frontend public assets
+!client/public/**
+!client/app/favicon.ico
 
 # ============================================
 # BACKUP FILES
