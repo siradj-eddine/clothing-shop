@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clothing-shop-config
+  namespace: clothing-shop
+data:
+  # Backend environment variables (non-sensitive)
+  DB_NAME: "clothing_shop"
+  DB_USER: "neondb_owner"
+  DB_HOST: "ep-bold-sea-agb8q6e2-pooler.c-2.eu-central-1.aws.neon.tech"
+  DB_PORT: "5432"
+  AWS_STORAGE_BUCKET_NAME: "clothing-shop"
+  AWS_S3_REGION_NAME: "auto"
+  AWS_S3_CUSTOM_DOMAIN: "pub-55f84330b09847d4879adb5b76659861.r2.dev"
+  AWS_S3_ENDPOINT_URL: "https://52d96065c309b6bf152e8b3f6e181433.r2.cloudflarestorage.com"
+  # NOTE: DEBUG=True is only for LOCAL minikube testing (no TLS termination here).
+  # Render production must keep DEBUG=False in its own dashboard env vars — do not copy this value there.
+  DEBUG: "True"
+  EMAIL_HOST_USER: "ad6163001@smtp-brevo.com"
+  DEFAULT_FROM_EMAIL: "siradjboulemaiz@gmail.com"
+  # Frontend environment variables
+  NEXT_PUBLIC_API_URL: "https://clothing-shop-api-7r8z.onrender.com"
+  NEXT_PUBLIC_GA_ID: "G-4X7WY3010Z"
+  NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: "XKCC3-ZsXvIJiH9gSM_uHH_kGa5flvPLaSGnWMl9KR4"

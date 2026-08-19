@@ -284,4 +284,10 @@ CORS_ALLOWED_ORIGINS = [
 # Remove any empty strings from the list
 CORS_ALLOWED_ORIGINS = [origin for origin in CORS_ALLOWED_ORIGINS if origin]
 
+# Allow dynamic localhost and 127.0.0.1 ports (needed for minikube service dynamic ports)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost(:\d+)?$",
+    r"^http://127\.0\.0\.1(:\d+)?$",
+]
+
 CORS_ALLOW_CREDENTIALS = True

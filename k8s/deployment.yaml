@@ -1,0 +1,196 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+  namespace: clothing-shop
+  labels:
+    app: clothing-shop
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clothing-shop
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: clothing-shop
+        tier: backend
+    spec:
+      containers:
+        - name: server
+          image: clothing-shop-server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: SECRET_KEY
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: DB_PASSWORD
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: BREVO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: BREVO_API_KEY
+            - name: RESEND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: RESEND_API_KEY
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clothing-shop-secrets
+                  key: EMAIL_HOST_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: DB_USER
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: DB_PORT
+            - name: AWS_STORAGE_BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: AWS_STORAGE_BUCKET_NAME
+            - name: AWS_S3_REGION_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: AWS_S3_REGION_NAME
+            - name: AWS_S3_CUSTOM_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: AWS_S3_CUSTOM_DOMAIN
+            - name: AWS_S3_ENDPOINT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: AWS_S3_ENDPOINT_URL
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: EMAIL_HOST_USER
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: DEFAULT_FROM_EMAIL
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: DEBUG
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /api/products/categories/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/products/categories/
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: clothing-shop
+  labels:
+    app: clothing-shop
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clothing-shop
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: clothing-shop
+        tier: frontend
+    spec:
+      containers:
+        - name: client
+          image: clothing-shop-client:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: NEXT_PUBLIC_API_URL
+            - name: NEXT_PUBLIC_GA_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: NEXT_PUBLIC_GA_ID
+            - name: NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+              valueFrom:
+                configMapKeyRef:
+                  name: clothing-shop-config
+                  key: NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
