@@ -5,9 +5,9 @@ metadata:
   namespace: clothing-shop
 data:
   # Backend environment variables (non-sensitive)
-  DB_NAME: "clothing_shop"
-  DB_USER: "neondb_owner"
-  DB_HOST: "ep-bold-sea-agb8q6e2-pooler.c-2.eu-central-1.aws.neon.tech"
+  DB_NAME: "clothing_shop_db_7o9n"
+  DB_USER: "clothing_shop_db_7o9n_user"
+  DB_HOST: "dpg-da4mbi8jo6nc73demrsg-a.frankfurt-postgres.render.com"
   DB_PORT: "5432"
   AWS_STORAGE_BUCKET_NAME: "clothing-shop"
   AWS_S3_REGION_NAME: "auto"
