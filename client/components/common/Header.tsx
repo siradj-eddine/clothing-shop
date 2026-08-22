@@ -237,15 +237,7 @@ export default function Header() {
                         {t('nav.logout')}
                       </button>
                     </>
-                  ) : (
-                    <Link
-                      href="/admin-login"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                      onClick={() => setIsAccountOpen(false)}
-                    >
-                      {t('nav.adminLogin')}
-                    </Link>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
